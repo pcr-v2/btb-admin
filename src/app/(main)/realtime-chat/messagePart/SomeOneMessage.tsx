@@ -2,44 +2,49 @@
 
 import { Box, styled } from "@mui/material";
 import { motion } from "framer-motion";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+import DotLoading from "@/app/_components/common/DotLoading";
+import { EmojiData } from "@/config/emojiData";
+import { PictureData } from "@/config/pictureData";
+import { VideoPictureData } from "@/config/videoPictureData";
+import useMappingEmojiConfig from "@/hooks/useMappingEmojiConfig";
 
 interface IProps {
+  emoji: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
   content: string;
   userName: string;
   profileImg?: string;
   msgId: number;
+  onTypingUser: {
+    userName: string;
+    profileImg: string;
+    isTyping: boolean;
+  };
 }
 
 export default function SomeOneMessage(props: IProps) {
-  const { content, userName, profileImg, msgId } = props;
-
-  const [hoveredMessageId, setHoveredMessageId] = useState<number | null>(null);
+  const { content, userName, profileImg, msgId, emoji, onTypingUser } = props;
 
   return (
-    <Wrapper
-      onHoverStart={() => setHoveredMessageId(msgId)}
-      onHoverEnd={() => setHoveredMessageId(null)}
-    >
+    <Wrapper>
       <ProfileImg src={profileImg} alt="profile" />
 
       <Contents>
         <UserName>{userName}</UserName>
-        <Message>{content}</Message>
+        <Message>
+          {onTypingUser.isTyping && msgId === -1 ? (
+            <DotLoading />
+          ) : emoji.emojiKey === "" ? (
+            content
+          ) : (
+            <WithEmojiMessageBox>
+              {useMappingEmojiConfig({ ...emoji })}
+              {content === "" ? "" : content}
+            </WithEmojiMessageBox>
+          )}
+        </Message>
       </Contents>
-
-      {hoveredMessageId === msgId && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: 0,
-            right: -20,
-            width: "20px",
-            height: "40px",
-            border: "1px solid red",
-          }}
-        />
-      )}
     </Wrapper>
   );
 }
@@ -66,7 +71,7 @@ const Message = styled(Box)(() => {
     whiteSpace: "normal",
     position: "relative",
     wordBreak: "break-word",
-    backgroundColor: "#f7f5f5",
+    backgroundColor: "#f3f0f0",
     border: "1px solid #ebebeb",
 
     ":after": {
@@ -90,10 +95,9 @@ const ProfileImg = styled("img")(() => {
   return {
     width: "50px",
     height: "50px",
-    padding: "1px",
     objectFit: "cover",
     borderRadius: "10px",
-    border: "1px solid #bcbcbc",
+    boxShadow: "0 5px 12px rgba(0,0,0,0.12), 0 1px 5px rgba(0,0,0,0.24)",
   };
 });
 
@@ -109,6 +113,16 @@ const Contents = styled(Box)(() => {
   return {
     gap: "4px",
     display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+  };
+});
+
+const WithEmojiMessageBox = styled(Box)(() => {
+  return {
+    gap: "4px",
+    display: "flex",
+    alignItems: "center",
     flexDirection: "column",
     justifyContent: "center",
   };

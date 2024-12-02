@@ -60,7 +60,7 @@ export default function EndAdormentInput(props: IProps) {
   );
 }
 
-const ExtendTextField = styled(TextField)<{ disabled }>(({ disabled }) => {
+const ExtendTextField = styled(TextField)(() => {
   return {
     // "&.MuiTextField-root": {
     //   "& .MuiOutlinedInput-root": {

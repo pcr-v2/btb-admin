@@ -57,10 +57,13 @@ export default function ChatInput(props: IProps) {
 
 const ExtendTextField = styled(TextField)(() => {
   return {
+    zIndex: 3,
     "&.MuiTextField-root": {
+      zIndex: 3,
       minHeight: "unset",
     },
     "& .MuiInputBase-root .MuiOutlinedInput-notchedOutline": {
+      zIndex: 3,
       border: "1px solid #eee",
       borderRadius: "32px",
 
@@ -72,12 +75,15 @@ const ExtendTextField = styled(TextField)(() => {
       },
     },
     "& .MuiInputLabel-root": {
+      zIndex: 3,
       fontSize: "13px",
       color: "#bcbcbc",
       paddingLeft: "8px",
     },
     "& .MuiOutlinedInput-root": {
+      zIndex: 3,
       input: {
+        zIndex: 3,
         fontSize: "14px",
         padding: "16.5px 0px 16.5px 24px",
       },

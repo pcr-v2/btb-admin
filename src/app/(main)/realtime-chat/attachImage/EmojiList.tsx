@@ -6,7 +6,10 @@ import { motion } from "framer-motion";
 import { EmojiData } from "@/config/emojiData";
 
 interface IProps {
-  onClickEmoji: (emojiKey: string) => void;
+  onClickEmoji: (
+    emojiType: "Emoji" | "Picture" | "Video",
+    emojiKey: string,
+  ) => void;
 }
 
 export default function EmojiList(props: IProps) {
@@ -14,23 +17,20 @@ export default function EmojiList(props: IProps) {
 
   return (
     <Wrapper>
-      {EmojiData.map((el, index) => {
-        const [key, value] = Object.entries(el)[0];
-        return (
-          <Emoji
-            key={index}
-            src={value}
-            alt={key}
-            initial="beforeHover"
-            whileHover="onHover"
-            variants={{
-              beforeHover: { scale: 1 },
-              onHover: { scale: 1.4 },
-            }}
-            onClick={() => onClickEmoji(key)}
-          />
-        );
-      })}
+      {Object.entries(EmojiData).map(([key, value]) => (
+        <Emoji
+          key={key}
+          src={value}
+          alt={key}
+          initial="beforeHover"
+          whileHover="onHover"
+          variants={{
+            beforeHover: { scale: 1 },
+            onHover: { scale: 1.4 },
+          }}
+          onClick={() => onClickEmoji("Emoji", key)}
+        />
+      ))}
     </Wrapper>
   );
 }

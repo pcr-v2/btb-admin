@@ -9,11 +9,11 @@ export default async function handler(
   res: NextApiResponseServerIO,
 ) {
   if (req.method === "POST") {
-    const userInfo = req.body;
+    const typingInfo = req.body;
 
-    console.log("userInfo", userInfo);
+    console.log("typingInfo", typingInfo);
 
-    res?.socket?.server?.io?.emit("onUserJoin", userInfo);
-    res.status(201).json(userInfo);
+    res?.socket?.server?.io?.emit("onTyping", typingInfo);
+    res.status(201).json(typingInfo);
   }
 }

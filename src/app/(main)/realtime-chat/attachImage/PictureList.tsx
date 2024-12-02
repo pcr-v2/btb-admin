@@ -5,10 +5,19 @@ import { motion } from "framer-motion";
 
 import { PictureData } from "@/config/pictureData";
 
-export default function PictureList() {
+interface IProps {
+  onClickEmoji: (
+    emojiType: "Emoji" | "Picture" | "Video",
+    emojiKey: string,
+  ) => void;
+}
+
+export default function PictureList(props: IProps) {
+  const { onClickEmoji } = props;
+
   return (
     <Wrapper>
-      {PictureData.map((el, index) => {
+      {PictureData.map((data, index) => {
         return (
           <PictrueWrap
             key={index}
@@ -22,13 +31,12 @@ export default function PictureList() {
             }}
           >
             <Picture
-              src={el.url}
-              alt={el.key}
-
-              // onClick={() => onClickEmoji(key)}
+              src={data.url}
+              alt={data.key}
+              onClick={() => onClickEmoji("Picture", data.key)}
             />
 
-            <PictureDesc>{el.krName}</PictureDesc>
+            <PictureDesc>{data.krName}</PictureDesc>
           </PictrueWrap>
         );
       })}

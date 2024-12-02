@@ -3,10 +3,18 @@
 import { Box, Button, styled } from "@mui/material";
 import axios from "axios";
 import { motion } from "framer-motion";
-import React, { useEffect, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { Socket, io as ClientIO } from "socket.io-client";
 
 import ConnectedUserProfile from "@/app/(main)/realtime-chat/ConnectedUserProfile";
 import AttachImage from "@/app/(main)/realtime-chat/attachImage";
+import PreviewDim from "@/app/(main)/realtime-chat/attachImage/PreviewDim";
 import ChatInputPart from "@/app/(main)/realtime-chat/chatInput";
 import MessagePart from "@/app/(main)/realtime-chat/messagePart";
 import { GetUserResponse } from "@/app/_actions/account/auth/getUserSchema";
@@ -14,24 +22,61 @@ import { IMessage, useSocket } from "@/app/_components/SocketProvider";
 import ChatInput from "@/app/_components/common/ChatInput";
 import Emoji_Add from "@/assets/icon/emoji-add.svg";
 
+type TSelectedEmoji = {
+  emojiType: "Emoji" | "Picture" | "Video";
+  emojiKey: string;
+};
+
+export type TCurrentMessage = {
+  emoji?: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
+  msg: string;
+};
+
 interface IProps {
   res: GetUserResponse;
 }
 
 export default function Chat(props: IProps) {
   const { res } = props;
-  const { socket, isConnected, connectedUsers } = useSocket();
+  const { socket, connectedUsers } = useSocket();
 
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState("");
   const [userName, setUserName] = useState("");
   const [userProfileImg, setUserProfileImg] = useState("");
   const [onClickEmoji, setOnClickEmoji] = useState(false);
+  const [showPreview, setShowPreview] = useState(false);
+  const [selectedEmoji, setSelectedEmoji] = useState<TSelectedEmoji>({
+    emojiType: "Emoji",
+    emojiKey: "",
+  });
+
+  const [onTypingUser, setOnTypingUSer] = useState({
+    userName: "",
+    profileImg: "",
+    isTyping: false,
+  });
 
   const sendUserInfo = async (userName: string, profileImg: string) => {
     try {
       await axios.post("/api/connect", {
         userName,
+        profileImg,
+      });
+    } catch (error) {
+      console.error("메시지 전송 실패:", error);
+    }
+  };
+
+  const sendTypingInfo = async (
+    userName: string,
+    profileImg: string,
+    isTyping: boolean,
+  ) => {
+    try {
+      await axios.post("/api/typing", {
+        userName,
+        isTyping,
         profileImg,
       });
     } catch (error) {
@@ -49,7 +94,6 @@ export default function Chat(props: IProps) {
 
   useEffect(() => {
     const handleMessage = async (data: IMessage) => {
-      console.log("data ", data);
       setMessages((prevMessages) => [...prevMessages, data]);
     };
 
@@ -60,14 +104,32 @@ export default function Chat(props: IProps) {
     };
   }, [socket, messages, res]);
 
+  useEffect(() => {
+    socket?.on(
+      "onTyping",
+      (data: { userName: string; profileImg: string; isTyping: boolean }) => {
+        setOnTypingUSer({
+          userName: data.userName,
+          profileImg: data.profileImg,
+          isTyping: data.isTyping,
+        });
+      },
+    );
+
+    return () => {
+      socket?.off("onTyping");
+    };
+  }, [socket, userName]);
+
   const sendMessage = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
-    if (!currentMessage.trim()) return;
+    if (!currentMessage.trim() && selectedEmoji.emojiKey === "") return;
 
     try {
       await axios.post("/api/chat", {
         userName,
+        emoji: selectedEmoji,
         content: currentMessage,
         profileImg: userProfileImg,
       });
@@ -75,7 +137,22 @@ export default function Chat(props: IProps) {
       console.error("메시지 전송 실패:", error);
     }
     setCurrentMessage("");
+    setSelectedEmoji({ emojiType: "Emoji", emojiKey: "" });
+    setShowPreview(false);
   };
+
+  useEffect(() => {
+    if (currentMessage !== "") {
+      setOnClickEmoji(false);
+      // setIsTypingMyMessage(true);
+      // handleTyping(userName, true); // 타이핑 시작
+      sendTypingInfo(userName, userProfileImg, true);
+    } else {
+      // setIsTypingMyMessage(false);
+      // handleTyping(userName, false); // 타이핑 종료
+      sendTypingInfo(userName, userProfileImg, false);
+    }
+  }, [currentMessage, userName, userProfileImg]);
 
   return (
     <Wrapper>
@@ -84,7 +161,11 @@ export default function Chat(props: IProps) {
         connectedUsers={connectedUsers[connectedUsers.length - 1]}
       />
 
-      <MessagePart messages={messages} userName={userName} />
+      <MessagePart
+        messages={messages}
+        userName={userName}
+        onTypingUser={onTypingUser}
+      />
 
       <ChatInputPart
         currentMessage={currentMessage}
@@ -93,14 +174,27 @@ export default function Chat(props: IProps) {
         onClickSend={sendMessage}
       />
 
+      {showPreview && (
+        <PreviewDim
+          selectedEmoji={selectedEmoji}
+          onClose={() => setShowPreview(!showPreview)}
+        />
+      )}
+
       {onClickEmoji && (
         <AttachImage
           onClose={() => setOnClickEmoji(false)}
-          onClickEmoji={(emojiKey: string) => {
-            const messageWithEmoji = currentMessage + emojiKey;
-            setCurrentMessage(messageWithEmoji);
+          onClickEmoji={(
+            emojiType: "Emoji" | "Picture" | "Video",
+            emojiKey: string,
+          ) => {
+            // const messageWithEmoji = currentMessage + emojiKey;
+            // setCurrentMessage(messageWithEmoji);
             // setContent(messageWithEmoji);
+            setSelectedEmoji({ emojiType, emojiKey });
             setOnClickEmoji(!onClickEmoji);
+            setShowPreview(true);
+            // setCurrentMessage('');
           }}
         />
       )}
@@ -120,83 +214,7 @@ const Wrapper = styled(Box)(() => {
     justifyContent: "center",
     padding: "32px 24px 24px",
     position: "relative",
+    zIndex: 1,
     border: "1px solid #eee",
   };
 });
-
-const IsConnectedBox = styled(motion.div)(() => {
-  return {
-    gap: "12px",
-    display: "flex",
-    fontSize: "14px",
-    marginLeft: "8px",
-    alignItems: "center",
-    justifyContent: "start",
-  };
-});
-
-const Message = styled(Box)<{ ismymessage: string }>(({ ismymessage }) => {
-  return {
-    width: "100%",
-    display: "flex",
-    justifyContent: ismymessage === "true" ? "end" : "start",
-  };
-});
-
-const ProfileImg = styled("img")(() => {
-  return {
-    width: "48px",
-    height: "48px",
-    padding: "1px",
-    objectFit: "cover",
-    borderRadius: "100%",
-    border: "1px solid #bcbcbc",
-  };
-});
-
-const ScrollBox = styled(Box)(() => {
-  return {
-    marginTop: "-20px",
-  };
-});
-
-const InputPart = styled(Box)(() => {
-  return {
-    width: "100%",
-    display: "flex",
-    marginTop: "12px",
-    justifyContent: "center",
-  };
-});
-
-const FormST = styled("form")(() => {
-  return {
-    width: "100%",
-    display: "flex",
-    flexDirection: "column",
-    gap: "10px",
-    minHeight: "44px",
-  };
-});
-
-const EndAdormentButton = styled(Button)(() => {
-  return {
-    fontWeight: 600,
-    fontSize: "14px",
-    paddin: "8px 10px",
-    borderRadius: "24px",
-    whiteSpace: "nowrap",
-    letterSpacing: "1px",
-  };
-});
-
-const InputWrap = styled("div")(() => ({
-  position: "relative",
-  display: "flex",
-  width: "100%",
-  maxWidth: "400px",
-  minHeight: "50px",
-  padding: "16.5px 24px 16.5px 0px",
-  justifyContent: "space-between",
-  border: "1px solid gray",
-}));

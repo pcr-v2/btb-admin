@@ -4,7 +4,7 @@ import Close from "@/assets/icon/close.svg";
 
 interface IProps {
   onClose: () => void;
-  handleSwitch: (value: { type: "emoji" | "picture" | "video" }) => void;
+  handleSwitch: (value: { type: "Emoji" | "Picture" | "Video" }) => void;
 }
 export default function SwichTab(props: IProps) {
   const { onClose, handleSwitch } = props;
@@ -12,13 +12,13 @@ export default function SwichTab(props: IProps) {
   return (
     <Wrapper>
       <Tabs>
-        <TabItem onClick={() => handleSwitch({ type: "emoji" })}>
+        <TabItem onClick={() => handleSwitch({ type: "Emoji" })}>
           이모지
         </TabItem>
-        <TabItem onClick={() => handleSwitch({ type: "picture" })}>
+        <TabItem onClick={() => handleSwitch({ type: "Picture" })}>
           짤방
         </TabItem>
-        <TabItem onClick={() => handleSwitch({ type: "video" })}>움짤</TabItem>
+        <TabItem onClick={() => handleSwitch({ type: "Video" })}>움짤</TabItem>
       </Tabs>
       <CloseImg src={Close.src} alt="close" onClick={onClose} />
     </Wrapper>

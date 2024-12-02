@@ -2,6 +2,8 @@
 
 import { Box, styled } from "@mui/material";
 
+import { TCurrentMessage } from "@/app/(main)/realtime-chat/Chat";
+import PreviewDim from "@/app/(main)/realtime-chat/attachImage/PreviewDim";
 import ChatInputAdornment from "@/app/(main)/realtime-chat/chatInput/ChatInputAdornment";
 import ChatInput from "@/app/_components/common/ChatInput";
 
@@ -40,12 +42,14 @@ const InputPart = styled(Box)(() => {
     width: "100%",
     display: "flex",
     marginTop: "12px",
+    zIndex: 3,
     justifyContent: "center",
   };
 });
 
 const FormST = styled("form")(() => {
   return {
+    zIndex: 3,
     width: "100%",
     display: "flex",
     flexDirection: "column",

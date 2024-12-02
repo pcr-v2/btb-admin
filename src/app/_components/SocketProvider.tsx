@@ -13,13 +13,14 @@ interface IProps {
   children: ReactNode;
 }
 
-// interface IContent {
-//   img: string[];
-//   msg: string | string[];
-// }
+interface IContent {
+  emoji: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
+  msg: string;
+}
 
 export interface IMessage {
   userName: string;
+  emoji: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
   content: string;
   profileImg?: string;
 }
@@ -29,11 +30,21 @@ interface IServerToClientEvents {
   connect: () => void;
   disconnect: () => void;
   onUserJoin: (userInfo: { userName: string; profileImg: string }) => void;
+  onTyping: (data: {
+    userName: string;
+    isTyping: boolean;
+    profileImg: string;
+  }) => void;
 }
 
 interface IClientToServerEvents {
   sendMessage: (data: IMessage) => void;
   onUserJoin: (userInfo: { userName: string; profileImg: string }) => void;
+  onTyping: (data: {
+    userName: string;
+    isTyping: boolean;
+    profileImg: string;
+  }) => void;
 }
 
 type TSocket = Socket<IServerToClientEvents, IClientToServerEvents>;
@@ -42,7 +53,8 @@ type TSocketContext = {
   socket: TSocket | null;
   connectedUsers: { userName: string; profileImg: string }[];
   isConnected: boolean;
-  onUserJoin: (userInfo: { userName: string; profileImg: string }) => void; // 접속한 유저 처리 함수
+  onUserJoin: (userInfo: { userName: string; profileImg: string }) => void;
+  // handleTyping: (userName: string, isTyping: boolean) => void;
 };
 
 const SocketContext = createContext<TSocketContext>({
@@ -50,6 +62,7 @@ const SocketContext = createContext<TSocketContext>({
   isConnected: false,
   connectedUsers: [{ userName: "", profileImg: "" }],
   onUserJoin: () => {},
+  // handleTyping: () => {}, // 초기값 설정
 });
 
 export const useSocket = () => {
@@ -74,16 +87,30 @@ export default function SocketProvider(props: IProps) {
     setConnectedUsers([{ ...userInfo }]);
   };
 
+  const handleTyping = (data: {
+    userName: string;
+    profileImg: string;
+    isTyping: boolean;
+  }) => {
+    // console.log(
+    //   "userName 프로바이더 로그",
+    //   data.userName,
+    //   data.isTyping,
+    //   data.profileImg,
+    // );
+    socket?.emit("onTyping", data);
+  };
+
   useEffect(() => {
     if (!socket) {
       return;
     }
 
-    console.log("Socket connection status: ", socket.connected); // 연결 상태 확인
-
     socket.on("disconnect", () => {
       setIsConnected(false);
     });
+
+    socket.on("onTyping", (data) => handleTyping(data));
 
     return () => {
       socket.off("disconnect");
@@ -94,17 +121,26 @@ export default function SocketProvider(props: IProps) {
     const socketInstance: TSocket = ClientIO("http://192.168.3.20:2024", {
       path: "/api/socket",
       addTrailingSlash: false,
+      transports: ["polling", "websocket"],
     });
     socketInstance.on("connect", () => setIsConnected(true));
     socketInstance.on("onUserJoin", onUserJoin);
+    socketInstance.on(
+      "onTyping",
+      (data: { userName: string; isTyping: boolean }) => {
+        // console.log(`${data.userName} is typing: ${data.isTyping}`);
+      },
+    );
     socketInstance.on("disconnect", () => setIsConnected(false));
 
     setSocket(socketInstance);
 
     return () => {
       socketInstance.off("connect");
-      socketInstance.off("disconnect");
       socketInstance.off("onUserJoin", onUserJoin);
+      socketInstance.off("onTyping");
+
+      socketInstance.off("disconnect");
 
       socketInstance.disconnect();
     };

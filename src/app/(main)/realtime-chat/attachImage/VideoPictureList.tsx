@@ -5,10 +5,19 @@ import { motion } from "framer-motion";
 
 import { VideoPictureData } from "@/config/videoPictureData";
 
-export default function VideoPictureList() {
+interface IProps {
+  onClickEmoji: (
+    emojiType: "Emoji" | "Picture" | "Video",
+    emojiKey: string,
+  ) => void;
+}
+
+export default function VideoPictureList(props: IProps) {
+  const { onClickEmoji } = props;
+
   return (
     <Wrapper>
-      {VideoPictureData.map((el, index) => {
+      {VideoPictureData.map((data, index) => {
         return (
           <VideoPictrueWrap
             key={index}
@@ -22,14 +31,14 @@ export default function VideoPictureList() {
             }}
           >
             <VideoPicture
-              src={el.url}
+              src={data.url}
               loop
               autoPlay
               playsInline
-              // onClick={() => onClickEmoji(key)}
+              onClick={() => onClickEmoji("Video", data.key)}
             />
 
-            <VideoPictureDesc>{el.krName}</VideoPictureDesc>
+            <VideoPictureDesc>{data.krName}</VideoPictureDesc>
           </VideoPictrueWrap>
         );
       })}

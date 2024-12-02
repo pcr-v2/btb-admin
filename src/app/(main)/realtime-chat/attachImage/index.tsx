@@ -9,18 +9,21 @@ import SwichTab from "@/app/(main)/realtime-chat/attachImage/SwichTab";
 import VideoPictureList from "@/app/(main)/realtime-chat/attachImage/VideoPictureList";
 
 type TShowList = {
-  type: "emoji" | "picture" | "video";
+  type: "Emoji" | "Picture" | "Video";
 };
 
 interface IProps {
   onClose: () => void;
-  onClickEmoji: (emojiKey: string) => void;
+  onClickEmoji: (
+    emojiType: "Emoji" | "Picture" | "Video",
+    emojiKey: string,
+  ) => void;
 }
 
 export default function AttachImage(props: IProps) {
   const { onClickEmoji, onClose } = props;
 
-  const [showList, setShowList] = useState<TShowList>({ type: "emoji" });
+  const [showList, setShowList] = useState<TShowList>({ type: "Emoji" });
 
   return (
     <Wrapper>
@@ -28,9 +31,13 @@ export default function AttachImage(props: IProps) {
         onClose={onClose}
         handleSwitch={(value: TShowList) => setShowList(value)}
       />
-      {showList.type === "emoji" && <EmojiList onClickEmoji={onClickEmoji} />}
-      {showList.type === "picture" && <PictureList />}
-      {showList.type === "video" && <VideoPictureList />}
+      {showList.type === "Emoji" && <EmojiList onClickEmoji={onClickEmoji} />}
+      {showList.type === "Picture" && (
+        <PictureList onClickEmoji={onClickEmoji} />
+      )}
+      {showList.type === "Video" && (
+        <VideoPictureList onClickEmoji={onClickEmoji} />
+      )}
     </Wrapper>
   );
 }
@@ -39,7 +46,7 @@ const Wrapper = styled(Box)(() => {
   return {
     top: 10,
     right: 10,
-    zIndex: 2,
+    zIndex: 3,
     gap: "8px",
     width: "100%",
     display: "flex",
@@ -51,20 +58,5 @@ const Wrapper = styled(Box)(() => {
     backgroundColor: "#fff",
     border: "1px solid #bdbdbd",
     boxShadow: "0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24)",
-  };
-});
-
-const EmojiPart = styled(Box)(() => {
-  return {
-    width: "100%",
-    rowGap: "12px",
-    height: "300px",
-    padding: "0px 24px 12px",
-    display: "flex",
-    flexWrap: "wrap",
-    columnGap: "12px",
-    maxWidth: "250px",
-    alignItems: "start",
-    justifyContent: "center",
   };
 });
