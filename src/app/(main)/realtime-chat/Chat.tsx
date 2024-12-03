@@ -10,7 +10,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Socket, io as ClientIO } from "socket.io-client";
 
 import ConnectedUserProfile from "@/app/(main)/realtime-chat/ConnectedUserProfile";
 import AttachImage from "@/app/(main)/realtime-chat/attachImage";
@@ -21,6 +20,7 @@ import { GetUserResponse } from "@/app/_actions/account/auth/getUserSchema";
 import { IMessage, useSocket } from "@/app/_components/SocketProvider";
 import ChatInput from "@/app/_components/common/ChatInput";
 import Emoji_Add from "@/assets/icon/emoji-add.svg";
+import dayjs from "@/lib/dayjs";
 
 type TSelectedEmoji = {
   emojiType: "Emoji" | "Picture" | "Video";
@@ -32,13 +32,19 @@ export type TCurrentMessage = {
   msg: string;
 };
 
+type TCheckTypingUsers = {
+  userName: string;
+  profileImg: string;
+  isTyping: boolean;
+};
+
 interface IProps {
   res: GetUserResponse;
 }
 
 export default function Chat(props: IProps) {
   const { res } = props;
-  const { socket, connectedUsers } = useSocket();
+  const { socket, connectedUsers, typingUsers } = useSocket();
 
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState("");
@@ -51,11 +57,7 @@ export default function Chat(props: IProps) {
     emojiKey: "",
   });
 
-  const [onTypingUser, setOnTypingUSer] = useState({
-    userName: "",
-    profileImg: "",
-    isTyping: false,
-  });
+  const [checkTypingUsers, setCheckTypingUsers] = useState<TCheckTypingUsers>();
 
   const sendUserInfo = async (userName: string, profileImg: string) => {
     try {
@@ -104,23 +106,6 @@ export default function Chat(props: IProps) {
     };
   }, [socket, messages, res]);
 
-  useEffect(() => {
-    socket?.on(
-      "onTyping",
-      (data: { userName: string; profileImg: string; isTyping: boolean }) => {
-        setOnTypingUSer({
-          userName: data.userName,
-          profileImg: data.profileImg,
-          isTyping: data.isTyping,
-        });
-      },
-    );
-
-    return () => {
-      socket?.off("onTyping");
-    };
-  }, [socket, userName]);
-
   const sendMessage = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
 
@@ -132,6 +117,7 @@ export default function Chat(props: IProps) {
         emoji: selectedEmoji,
         content: currentMessage,
         profileImg: userProfileImg,
+        timeStamp: dayjs().format("HH:mm"),
       });
     } catch (error) {
       console.error("메시지 전송 실패:", error);
@@ -143,17 +129,47 @@ export default function Chat(props: IProps) {
 
   useEffect(() => {
     if (currentMessage !== "") {
-      setOnClickEmoji(false);
-      // setIsTypingMyMessage(true);
-      // handleTyping(userName, true); // 타이핑 시작
-      sendTypingInfo(userName, userProfileImg, true);
+      setCheckTypingUsers({
+        userName,
+        profileImg: userProfileImg,
+        isTyping: true,
+      });
     } else {
-      // setIsTypingMyMessage(false);
-      // handleTyping(userName, false); // 타이핑 종료
-      sendTypingInfo(userName, userProfileImg, false);
+      setCheckTypingUsers({
+        userName,
+        profileImg: userProfileImg,
+        isTyping: false,
+      });
     }
-  }, [currentMessage, userName, userProfileImg]);
+  }, [currentMessage, userName]);
 
+  useEffect(() => {
+    if (checkTypingUsers != null) {
+      sendTypingInfo(
+        checkTypingUsers.userName,
+        checkTypingUsers.profileImg,
+        checkTypingUsers.isTyping,
+      );
+    }
+  }, [checkTypingUsers]);
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") {
+        setOnClickEmoji(false);
+      }
+    };
+
+    // 키보드 이벤트 리스너 등록
+    window.addEventListener("keydown", handleKeyDown);
+
+    // 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, []);
+
+  const [reply, setReply] = useState("");
   return (
     <Wrapper>
       <ConnectedUserProfile
@@ -164,14 +180,20 @@ export default function Chat(props: IProps) {
       <MessagePart
         messages={messages}
         userName={userName}
-        onTypingUser={onTypingUser}
+        onClickReply={(value) => setReply(value)}
       />
 
       <ChatInputPart
         currentMessage={currentMessage}
-        onChange={(value) => setCurrentMessage(value)}
+        onChange={(value) => {
+          setCurrentMessage(value);
+        }}
         onClickEmoji={() => setOnClickEmoji(!onClickEmoji)}
-        onClickSend={sendMessage}
+        onClickSend={(e) => {
+          setReply("");
+          sendMessage(e);
+        }}
+        reply={reply}
       />
 
       {showPreview && (
@@ -198,23 +220,51 @@ export default function Chat(props: IProps) {
           }}
         />
       )}
+
+      <Box
+        sx={{
+          width: "100%",
+          minHeight: "20px",
+          padding: "0px 12px",
+          fontSize: "12px",
+        }}
+      >
+        {typingUsers.length >= 1 &&
+          typingUsers.map((el, index) => {
+            if (el.isTyping && el.userName !== checkTypingUsers?.userName)
+              return (
+                <span style={{ fontWeight: 700 }} key={index}>
+                  {el.userName}
+                  {typingUsers.filter(
+                    (el) => el.isTyping && el.userName !== userName,
+                  ).length >= 2 && index !== typingUsers.length - 1
+                    ? ", "
+                    : ""}
+                </span>
+              );
+          })}
+
+        {typingUsers.filter((el) => el.isTyping && el.userName !== userName)
+          .length >= 1 && "님이 입력중입니다."}
+      </Box>
     </Wrapper>
   );
 }
 
 const Wrapper = styled(Box)(() => {
   return {
-    gap: "12px",
+    zIndex: 1,
+    gap: "8px",
     width: "100%",
     display: "flex",
     maxWidth: "600px",
+    minHeight: "600px",
     alignItems: "center",
     borderRadius: "24px",
+    position: "relative",
     flexDirection: "column",
     justifyContent: "center",
-    padding: "32px 24px 24px",
-    position: "relative",
-    zIndex: 1,
+    padding: "32px 24px 12px",
     border: "1px solid #eee",
   };
 });

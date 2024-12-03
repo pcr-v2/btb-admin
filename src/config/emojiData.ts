@@ -33,4 +33,14 @@ export const EmojiData: TEmoji = {
   "::worry-face::": " /emoji/worry-face.png",
   "::wtf::": " /emoji/wtf.png",
   "::zip-mouse::": " /emoji/zip-mouse.png",
+
+  "::anxious::": " /emoji/anxious.png",
+  "::thumb::": " /emoji/thumb.png",
+  "::monkey::": " /emoji/monkey.png",
+  "::headbomb::": " /emoji/headbomb.png",
+  "::done::": " /emoji/done.png",
+  "::hundrad::": " /emoji/hundrad.png",
+  "::clap::": " /emoji/clap.png",
+  "::no::": " /emoji/no.png",
+  "::bomb::": " /emoji/bomb.png",
 };

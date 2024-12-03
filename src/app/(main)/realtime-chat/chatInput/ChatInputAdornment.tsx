@@ -2,6 +2,7 @@ import { Box, Button, styled } from "@mui/material";
 import { motion } from "framer-motion";
 
 import Emoji_Add from "@/assets/icon/emoji-add.svg";
+import Send from "@/assets/icon/send.svg";
 
 interface IProps {
   onClickEmoji: () => void;
@@ -20,6 +21,7 @@ export default function ChatInputAdornment(props: IProps) {
           beforeHover: { scale: 1 },
           onHover: { scale: 1.2 },
         }}
+        transition={{ type: "spring", stiffness: 400, damping: 10 }}
         src={Emoji_Add.src}
         alt="add"
         onClick={onClickEmoji}
@@ -29,7 +31,11 @@ export default function ChatInputAdornment(props: IProps) {
         onClick={onClickSend}
         type="submit"
       >
-        전송
+        <img
+          src={Send.src}
+          alt="send"
+          style={{ width: "20px", height: "20px", fill: "#fff", color: "#fff" }}
+        />
       </EndAdormentButton>
     </Wrapper>
   );
@@ -55,7 +61,7 @@ const EndAdormentButton = styled(Button)(() => {
   return {
     fontWeight: 600,
     fontSize: "14px",
-    paddin: "8px 10px",
+    paddin: "10px 12px",
     borderRadius: "24px",
     whiteSpace: "nowrap",
     letterSpacing: "1px",

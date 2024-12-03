@@ -36,10 +36,11 @@ export default function ConnectedUserProfile(props: IProps) {
 
   return (
     <Wrapper
+      exit={{ opacity: 0 }}
       initial={{ opacity: 0 }}
       animate={{ opacity: isConnectedVisible ? 1 : 0 }}
-      exit={{ opacity: 0 }}
       transition={{ duration: 1.5 }}
+      sx={{ display: isConnectedVisible ? "" : "none" }}
     >
       <IsConnectedBox>
         <ProfileImg src={connectedUser.profileImg} alt="profile" />
@@ -54,7 +55,7 @@ export default function ConnectedUserProfile(props: IProps) {
 const Wrapper = styled(motion.div)(() => {
   return {
     top: 20,
-    zIndex: 1,
+    zIndex: 3,
     display: "flex",
     position: "absolute",
     alignItems: "center",

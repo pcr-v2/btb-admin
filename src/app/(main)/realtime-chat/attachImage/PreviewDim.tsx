@@ -54,7 +54,7 @@ const DimmedPart = styled(Box)<{ emojitype: "Emoji" | "Picture" | "Video" }>(({
 }) => {
   return {
     zIndex: 2,
-    bottom: 90,
+    bottom: 120,
     width: "100%",
     display: "flex",
     padding: "24px",

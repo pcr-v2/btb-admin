@@ -28,15 +28,9 @@ export default function ChatInput(props: IProps) {
     name,
   } = props;
 
-  const getSafeHtml = (text: string) => {
-    // 텍스트에서 이모지를 HTML로 변환 (mappingEmoji 함수 사용)
-    console.log("text", text);
-
-    return mappingEmoji(text);
-  };
-
   return (
     <ExtendTextField
+      autoComplete="off"
       disabled={disabled}
       className={className}
       type="text"

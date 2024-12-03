@@ -13,6 +13,12 @@ interface IProps {
   children: ReactNode;
 }
 
+type TTypingUsers = {
+  userName: string;
+  profileImg: string;
+  isTyping: boolean;
+};
+
 interface IContent {
   emoji: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
   msg: string;
@@ -23,6 +29,7 @@ export interface IMessage {
   emoji: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
   content: string;
   profileImg?: string;
+  timeStamp: string;
 }
 
 interface IServerToClientEvents {
@@ -53,6 +60,7 @@ type TSocketContext = {
   socket: TSocket | null;
   connectedUsers: { userName: string; profileImg: string }[];
   isConnected: boolean;
+  typingUsers: { userName: string; profileImg: string; isTyping: boolean }[];
   onUserJoin: (userInfo: { userName: string; profileImg: string }) => void;
   // handleTyping: (userName: string, isTyping: boolean) => void;
 };
@@ -61,6 +69,7 @@ const SocketContext = createContext<TSocketContext>({
   socket: null,
   isConnected: false,
   connectedUsers: [{ userName: "", profileImg: "" }],
+  typingUsers: [{ userName: "", profileImg: "", isTyping: false }],
   onUserJoin: () => {},
   // handleTyping: () => {}, // 초기값 설정
 });
@@ -83,6 +92,8 @@ export default function SocketProvider(props: IProps) {
     ]
   >([{ userName: "", profileImg: "" }]);
 
+  const [typingUsers, setTypingUsers] = useState<TTypingUsers[]>([]);
+
   const onUserJoin = (userInfo: { userName: string; profileImg: string }) => {
     setConnectedUsers([{ ...userInfo }]);
   };
@@ -92,13 +103,34 @@ export default function SocketProvider(props: IProps) {
     profileImg: string;
     isTyping: boolean;
   }) => {
-    // console.log(
-    //   "userName 프로바이더 로그",
-    //   data.userName,
-    //   data.isTyping,
-    //   data.profileImg,
-    // );
-    socket?.emit("onTyping", data);
+    console.log(
+      "userName 프로바이더 로그",
+      data.userName,
+      data.isTyping,
+      data.profileImg,
+    );
+    setTypingUsers((prev) => {
+      if (!data.userName) {
+        // userName이 빈 문자열인 경우 배열 업데이트 방지
+        return prev.filter((el) => el.userName !== "");
+      }
+
+      const findedUser = prev.find((el) => el.userName === data.userName);
+
+      if (findedUser) {
+        // 이미 있는 유저의 isTyping 값만 업데이트
+        return prev.map((el) =>
+          el.userName === data.userName
+            ? { ...el, isTyping: data.isTyping }
+            : el,
+        );
+      } else {
+        // 새로운 유저 추가
+        return [...prev, data];
+      }
+    });
+
+    // socket?.emit("onTyping", data);
   };
 
   useEffect(() => {
@@ -115,7 +147,7 @@ export default function SocketProvider(props: IProps) {
     return () => {
       socket.off("disconnect");
     };
-  }, [socket]);
+  }, [socket, isConnected]);
 
   useEffect(() => {
     const socketInstance: TSocket = ClientIO("http://192.168.3.20:2024", {
@@ -125,12 +157,7 @@ export default function SocketProvider(props: IProps) {
     });
     socketInstance.on("connect", () => setIsConnected(true));
     socketInstance.on("onUserJoin", onUserJoin);
-    socketInstance.on(
-      "onTyping",
-      (data: { userName: string; isTyping: boolean }) => {
-        // console.log(`${data.userName} is typing: ${data.isTyping}`);
-      },
-    );
+    socketInstance.on("onTyping", handleTyping);
     socketInstance.on("disconnect", () => setIsConnected(false));
 
     setSocket(socketInstance);
@@ -148,7 +175,7 @@ export default function SocketProvider(props: IProps) {
 
   return (
     <SocketContext.Provider
-      value={{ socket, isConnected, onUserJoin, connectedUsers }}
+      value={{ socket, isConnected, onUserJoin, connectedUsers, typingUsers }}
     >
       {children}
     </SocketContext.Provider>

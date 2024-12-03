@@ -47,6 +47,7 @@ const ChildrenBox = styled(Box)(() => {
   return {
     width: "100%",
     display: "flex",
+    minHeight: "calc(100vh - 97px)",
     alignItems: "center",
     padding: "32px 24px",
     justifyContent: "center",

@@ -26,7 +26,11 @@ export default function AttachImage(props: IProps) {
   const [showList, setShowList] = useState<TShowList>({ type: "Emoji" });
 
   return (
-    <Wrapper>
+    <Wrapper
+      onKeyDown={(e) => {
+        console.log(e.target);
+      }}
+    >
       <SwichTab
         onClose={onClose}
         handleSwitch={(value: TShowList) => setShowList(value)}

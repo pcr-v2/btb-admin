@@ -40,6 +40,8 @@ const Wrapper = styled(Box)(() => {
     width: "100%",
     rowGap: "16px",
     height: "300px",
+    overflowY: "auto",
+    maxHeight: "300px",
     display: "flex",
     flexWrap: "wrap",
     columnGap: "16px",

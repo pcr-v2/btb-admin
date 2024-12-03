@@ -36,7 +36,7 @@ export default function PictureList(props: IProps) {
               onClick={() => onClickEmoji("Picture", data.key)}
             />
 
-            <PictureDesc>{data.krName}</PictureDesc>
+            <PictureDesc>{data.krName}d</PictureDesc>
           </PictrueWrap>
         );
       })}
@@ -83,5 +83,6 @@ const PictureDesc = styled("span")(() => {
   return {
     fontWeight: 200,
     fontSize: "10px",
+    paddingLeft: "4px",
   };
 });

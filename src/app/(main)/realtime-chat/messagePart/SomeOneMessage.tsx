@@ -1,10 +1,14 @@
 "use client";
 
-import { Box, styled } from "@mui/material";
+import { Box, styled, Tooltip } from "@mui/material";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
+import MessageToolbox from "@/app/(main)/realtime-chat/messagePart/MessageToolbox";
 import DotLoading from "@/app/_components/common/DotLoading";
+import EmojiReact from "@/assets/icon/emoji-add-2.svg";
+import Notice from "@/assets/icon/notice.svg";
+import Reply from "@/assets/icon/reply.png";
 import { EmojiData } from "@/config/emojiData";
 import { PictureData } from "@/config/pictureData";
 import { VideoPictureData } from "@/config/videoPictureData";
@@ -15,58 +19,96 @@ interface IProps {
   content: string;
   userName: string;
   profileImg?: string;
+  timeStamp: string;
   msgId: number;
-  onTypingUser: {
-    userName: string;
-    profileImg: string;
-    isTyping: boolean;
-  };
+  showTimeStamp: boolean;
+  onClickNotice: (value: string) => void;
+  onClickReply: (value: string) => void;
 }
 
 export default function SomeOneMessage(props: IProps) {
-  const { content, userName, profileImg, msgId, emoji, onTypingUser } = props;
+  const {
+    content,
+    userName,
+    profileImg,
+    emoji,
+    timeStamp,
+    showTimeStamp,
+    onClickNotice,
+    onClickReply,
+  } = props;
+
+  const [isHover, setIsHover] = useState(false);
 
   return (
-    <Wrapper>
-      <ProfileImg src={profileImg} alt="profile" />
-
-      <Contents>
-        <UserName>{userName}</UserName>
-        <Message>
-          {onTypingUser.isTyping && msgId === -1 ? (
-            <DotLoading />
-          ) : emoji.emojiKey === "" ? (
-            content
-          ) : (
-            <WithEmojiMessageBox>
-              {useMappingEmojiConfig({ ...emoji })}
-              {content === "" ? "" : content}
-            </WithEmojiMessageBox>
-          )}
-        </Message>
-      </Contents>
+    <Wrapper
+      isemoji={emoji.emojiKey}
+      onHoverStart={() => setIsHover(true)}
+      onHoverEnd={() => setIsHover(false)}
+    >
+      {isHover && (
+        <MessageToolbox
+          position="left"
+          showTimeStamp={showTimeStamp}
+          onMouseEnter={() => setIsHover(true)}
+          onMouseLeave={() => setIsHover(false)}
+          onClick={(toolKey) => {
+            if (toolKey === "notice" || toolKey === "reply") {
+              onClickNotice(content);
+              onClickReply(content);
+            }
+          }}
+        />
+      )}
+      <Box sx={{ display: "flex", gap: "12px", alignItems: "start" }}>
+        <ProfileImg src={profileImg} alt="profile" />
+        <Contents>
+          <UserName>{userName}</UserName>
+          <Message>
+            {emoji.emojiKey === "" ? (
+              content
+            ) : (
+              <WithEmojiMessageBox>
+                {useMappingEmojiConfig({ ...emoji })}
+                {content === "" ? "" : content}
+              </WithEmojiMessageBox>
+            )}
+          </Message>
+        </Contents>
+      </Box>
+      {showTimeStamp && (
+        <span
+          style={{ fontSize: "10px", color: "#9e9e9e", letterSpacing: "0.4px" }}
+        >
+          {timeStamp}
+        </span>
+      )}
     </Wrapper>
   );
 }
 
-const Wrapper = styled(motion.div)(() => {
+const Wrapper = styled(motion.div)<{ isemoji: string }>(({ isemoji }) => {
   return {
+    gap: "8px",
     zIndex: 1,
-    gap: "12px",
+    padding: "1px",
     display: "flex",
-    alignItems: "start",
+    alignItems: "end",
     position: "relative",
+    paddingRight: "10px",
+    // width: isemoji === "" ? "unset" : "100%",
+    // maxWidth: isemoji === "" ? "unset" : "320px",
   };
 });
 
 const Message = styled(Box)(() => {
   return {
+    width: "100%",
     display: "flex",
     fontSize: "12px",
-    width: "100%",
     maxWidth: "400px",
-    padding: "8px 12px",
-    borderRadius: "4px",
+    padding: "12px",
+    borderRadius: "8px",
     alignItems: "center",
     whiteSpace: "normal",
     position: "relative",
@@ -93,8 +135,8 @@ const Message = styled(Box)(() => {
 
 const ProfileImg = styled("img")(() => {
   return {
-    width: "50px",
-    height: "50px",
+    width: "56px",
+    height: "56px",
     objectFit: "cover",
     borderRadius: "10px",
     boxShadow: "0 5px 12px rgba(0,0,0,0.12), 0 1px 5px rgba(0,0,0,0.24)",
@@ -111,10 +153,9 @@ const UserName = styled("span")(() => {
 
 const Contents = styled(Box)(() => {
   return {
-    gap: "4px",
+    gap: "5px",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "center",
   };
 });
 

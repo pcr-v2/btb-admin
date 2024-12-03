@@ -12,15 +12,21 @@ interface IProps {
   onChange: (value: string) => void;
   onClickSend: (e: React.MouseEvent<HTMLButtonElement>) => void;
   onClickEmoji: () => void;
+  reply?: string;
 }
 
 export default function ChatInputPart(props: IProps) {
-  const { onClickEmoji, onClickSend, currentMessage, onChange } = props;
+  const { onClickEmoji, onClickSend, currentMessage, onChange, reply } = props;
+  console.log("reply", reply);
   return (
     <InputPart>
       <FormST>
         <ChatInput
-          label="메세지를 입력해주세요"
+          label={
+            reply
+              ? `${reply}에 대한 답장을 입력해주세요.`
+              : "메세지를 입력해주세요"
+          }
           value={currentMessage}
           name="message"
           onChange={(e) => onChange(e.target.value)}
@@ -49,11 +55,10 @@ const InputPart = styled(Box)(() => {
 
 const FormST = styled("form")(() => {
   return {
-    zIndex: 3,
+    gap: "10px",
     width: "100%",
     display: "flex",
-    flexDirection: "column",
-    gap: "10px",
     minHeight: "44px",
+    flexDirection: "column",
   };
 });

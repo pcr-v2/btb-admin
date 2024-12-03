@@ -86,6 +86,7 @@ const VideoPicture = styled(motion.video)(() => {
 const VideoPictureDesc = styled("span")(() => {
   return {
     fontWeight: 200,
-    fontSize: "14px",
+    fontSize: "10px",
+    paddingLeft: "4px",
   };
 });

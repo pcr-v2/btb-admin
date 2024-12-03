@@ -35,17 +35,17 @@ export default function useMappingEmojiConfig(props: IProps) {
 
 const PreviewImg = styled("img")(() => {
   return {
-    width: "70%",
-    height: "70%",
+    width: "100%",
+    maxWidth: "320px",
     borderRadius: "8px",
   };
 });
 
 const PreviewVideo = styled("video")(() => {
   return {
-    width: "70%",
-    height: "70%",
-    objectFit: "contain",
+    width: "100%",
+    maxWidth: "320px",
+    objectFit: "cover",
     borderRadius: "8px",
   };
 });
