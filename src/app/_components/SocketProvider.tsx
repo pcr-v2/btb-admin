@@ -37,6 +37,13 @@ interface IServerToClientEvents {
   connect: () => void;
   disconnect: () => void;
   onUserJoin: (userInfo: { userName: string; profileImg: string }) => void;
+  reaction: (reaction: {
+    userName: string;
+    profileImg: string;
+    msgId: number;
+    content: string;
+    time: string;
+  }) => void;
   onTyping: (data: {
     userName: string;
     isTyping: boolean;
@@ -47,6 +54,13 @@ interface IServerToClientEvents {
 interface IClientToServerEvents {
   sendMessage: (data: IMessage) => void;
   onUserJoin: (userInfo: { userName: string; profileImg: string }) => void;
+  reaction: (reaction: {
+    userName: string;
+    profileImg: string;
+    msgId: number;
+    content: string;
+    time: string;
+  }) => void;
   onTyping: (data: {
     userName: string;
     isTyping: boolean;

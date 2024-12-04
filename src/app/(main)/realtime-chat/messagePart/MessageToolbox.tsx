@@ -5,16 +5,23 @@ import EmojiReact from "@/assets/icon/emoji-add-2.svg";
 import Notice from "@/assets/icon/notice.svg";
 import Reply from "@/assets/icon/reply.png";
 
+type TToolbox = {
+  key: "notice" | "reply" | "emojireact";
+  title: "공지등록" | "답장" | "공감";
+  imgUrl: string;
+  size: string;
+};
+
 interface IProps {
   position: "left" | "right";
   showTimeStamp: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   msgId: number;
-  onClick: (toolKey: string, msgId: number) => void;
+  onClick: (toolKey: "notice" | "reply" | "emojireact", msgId: number) => void;
 }
 
-const ToolboxList = [
+const ToolboxList: TToolbox[] = [
   {
     key: "notice",
     title: "공지등록",

@@ -2,7 +2,7 @@
 
 import { Box, styled } from "@mui/material";
 import { useRouter } from "next/navigation";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useState } from "react";
 import toast from "react-hot-toast";
 
 import { signinAction } from "@/app/_actions/account/signin/signinAction";
@@ -53,6 +53,12 @@ export default function SigninForm() {
     }
   };
 
+  const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleLogin({ id: signinValues.id, pw: signinValues.pw });
+    }
+  };
+
   return (
     <>
       <TopContent>
@@ -72,6 +78,7 @@ export default function SigninForm() {
             value={signinValues.pw}
             helperText="비밀번호를 입력해주세요."
             onChange={onChangeInput}
+            onKeyDown={handleKeyDown}
           />
         </Inputs>
       </TopContent>

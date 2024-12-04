@@ -5,17 +5,17 @@ import { useEffect, useRef, useState } from "react";
 
 import MessageNotice from "@/app/(main)/realtime-chat/messagePart/MessageNotice";
 import MyMessage from "@/app/(main)/realtime-chat/messagePart/MyMessage";
-import SomeOneMessage from "@/app/(main)/realtime-chat/messagePart/SomeOneMessage";
+import OtherMessage from "@/app/(main)/realtime-chat/messagePart/OtherMessage";
 import { IMessage } from "@/app/_components/SocketProvider";
 
 interface IProps {
   messages: IMessage[];
-  userName: string;
+  userInfo: { userName: string; profileImg: string };
   onClickReply: (value: string) => void;
 }
 
 export default function MessagePart(props: IProps) {
-  const { messages, userName, onClickReply } = props;
+  const { messages, userInfo, onClickReply } = props;
   const messagesEndRef = useRef<HTMLDivElement | null>(null);
 
   const scrollToBottom = () => {
@@ -38,7 +38,7 @@ export default function MessagePart(props: IProps) {
     <Wrapper>
       <MessageNotice notice={notice} />
       {messages.map((message, index) => {
-        const isMyMessage = userName === message.userName;
+        const isMyMessage = userInfo.userName === message.userName;
         // 다음 메시지의 timeStamp와 비교
         const nextMessageTimeStamp =
           messages[index + 1]?.userName === message.userName
@@ -50,6 +50,7 @@ export default function MessagePart(props: IProps) {
           <Message key={index} ismymessage={isMyMessage.toString()}>
             {isMyMessage ? (
               <MyMessage
+                userInfo={userInfo}
                 message={message}
                 msgId={index}
                 showTimeStamp={showTimeStamp}
@@ -57,9 +58,10 @@ export default function MessagePart(props: IProps) {
                 onClickReply={(value) => onClickReply(value)}
               />
             ) : (
-              <SomeOneMessage
+              <OtherMessage
                 {...message}
                 msgId={index}
+                userInfo={userInfo}
                 showTimeStamp={showTimeStamp}
                 onClickNotice={(value) => setNotice(value)}
                 onClickReply={(value) => onClickReply(value)}

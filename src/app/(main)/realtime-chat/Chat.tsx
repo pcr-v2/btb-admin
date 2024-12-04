@@ -22,6 +22,11 @@ import ChatInput from "@/app/_components/common/ChatInput";
 import Emoji_Add from "@/assets/icon/emoji-add.svg";
 import dayjs from "@/lib/dayjs";
 
+type TUserInfo = {
+  userName: string;
+  profileImg: string;
+};
+
 type TSelectedEmoji = {
   emojiType: "Emoji" | "Picture" | "Video";
   emojiKey: string;
@@ -39,17 +44,21 @@ type TCheckTypingUsers = {
 };
 
 interface IProps {
-  res: GetUserResponse;
+  getUserRes: GetUserResponse;
 }
 
 export default function Chat(props: IProps) {
-  const { res } = props;
+  const { getUserRes } = props;
   const { socket, connectedUsers, typingUsers } = useSocket();
 
   const [messages, setMessages] = useState<IMessage[]>([]);
   const [currentMessage, setCurrentMessage] = useState("");
-  const [userName, setUserName] = useState("");
-  const [userProfileImg, setUserProfileImg] = useState("");
+
+  const [userInfo, setUserInfo] = useState<TUserInfo>({
+    userName: "",
+    profileImg: "",
+  });
+
   const [onClickEmoji, setOnClickEmoji] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const [selectedEmoji, setSelectedEmoji] = useState<TSelectedEmoji>({
@@ -87,10 +96,12 @@ export default function Chat(props: IProps) {
   };
 
   useEffect(() => {
-    if (res) {
-      setUserName(res?.data?.name);
-      setUserProfileImg(res.data.profile_img);
-      sendUserInfo(res.data.name, res.data.profile_img);
+    if (getUserRes) {
+      setUserInfo({
+        userName: getUserRes.data.name,
+        profileImg: getUserRes.data.profile_img,
+      });
+      sendUserInfo(getUserRes.data.name, getUserRes.data.profile_img);
     }
   }, []);
 
@@ -104,7 +115,7 @@ export default function Chat(props: IProps) {
     return () => {
       socket?.off("message", handleMessage);
     };
-  }, [socket, messages, res]);
+  }, [socket, messages, getUserRes]);
 
   const sendMessage = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
@@ -113,10 +124,10 @@ export default function Chat(props: IProps) {
 
     try {
       await axios.post("/api/chat", {
-        userName,
+        userName: userInfo.userName,
         emoji: selectedEmoji,
         content: currentMessage,
-        profileImg: userProfileImg,
+        profileImg: userInfo.profileImg,
         timeStamp: dayjs().format("HH:mm"),
       });
     } catch (error) {
@@ -130,18 +141,18 @@ export default function Chat(props: IProps) {
   useEffect(() => {
     if (currentMessage !== "") {
       setCheckTypingUsers({
-        userName,
-        profileImg: userProfileImg,
+        userName: userInfo.userName,
+        profileImg: userInfo.profileImg,
         isTyping: true,
       });
     } else {
       setCheckTypingUsers({
-        userName,
-        profileImg: userProfileImg,
+        userName: userInfo.userName,
+        profileImg: userInfo.profileImg,
         isTyping: false,
       });
     }
-  }, [currentMessage, userName]);
+  }, [currentMessage, userInfo]);
 
   useEffect(() => {
     if (checkTypingUsers != null) {
@@ -173,13 +184,13 @@ export default function Chat(props: IProps) {
   return (
     <Wrapper>
       <ConnectedUserProfile
-        userName={userName}
+        userName={userInfo.userName}
         connectedUsers={connectedUsers[connectedUsers.length - 1]}
       />
 
       <MessagePart
         messages={messages}
-        userName={userName}
+        userInfo={userInfo}
         onClickReply={(value) => setReply(value)}
       />
 
@@ -236,7 +247,7 @@ export default function Chat(props: IProps) {
                 <span style={{ fontWeight: 700 }} key={index}>
                   {el.userName}
                   {typingUsers.filter(
-                    (el) => el.isTyping && el.userName !== userName,
+                    (el) => el.isTyping && el.userName !== userInfo.userName,
                   ).length >= 2 && index !== typingUsers.length - 1
                     ? ", "
                     : ""}
@@ -244,8 +255,9 @@ export default function Chat(props: IProps) {
               );
           })}
 
-        {typingUsers.filter((el) => el.isTyping && el.userName !== userName)
-          .length >= 1 && "님이 입력중입니다."}
+        {typingUsers.filter(
+          (el) => el.isTyping && el.userName !== userInfo.userName,
+        ).length >= 1 && "님이 입력중입니다."}
       </Box>
     </Wrapper>
   );

@@ -2,7 +2,7 @@
 
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { IconButton, styled, TextField } from "@mui/material";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useState } from "react";
 
 import { isPasswordFormat } from "@/lib/utils";
 
@@ -14,11 +14,20 @@ interface IProps {
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   className?: string;
   name: string;
+  onKeyDown: (e: KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export default function PasswordInput(props: IProps) {
-  const { label, placeholder, onChange, value, helperText, className, name } =
-    props;
+  const {
+    label,
+    placeholder,
+    onChange,
+    value,
+    helperText,
+    className,
+    name,
+    onKeyDown,
+  } = props;
 
   const [err, setErr] = useState(false);
   const [valid, setValid] = useState({
@@ -75,6 +84,7 @@ export default function PasswordInput(props: IProps) {
       placeholder={placeholder}
       helperText={handleHelperText()}
       onChange={onChange}
+      onKeyDown={onKeyDown}
       slotProps={{
         input: {
           endAdornment: (

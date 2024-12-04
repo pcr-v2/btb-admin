@@ -21,24 +21,28 @@ interface IProps {
   profileImg?: string;
   timeStamp: string;
   msgId: number;
+  userInfo: { userName: string; profileImg: string };
   showTimeStamp: boolean;
   onClickNotice: (value: string) => void;
   onClickReply: (value: string) => void;
 }
 
-export default function SomeOneMessage(props: IProps) {
+export default function OtherMessage(props: IProps) {
   const {
     content,
     userName,
     profileImg,
     emoji,
+    userInfo,
     timeStamp,
     showTimeStamp,
     onClickNotice,
     onClickReply,
+    msgId,
   } = props;
 
   const [isHover, setIsHover] = useState(false);
+  const [emojiReact, setEmojiReact] = useState({ id: 0, opne: false });
 
   return (
     <Wrapper
@@ -49,13 +53,19 @@ export default function SomeOneMessage(props: IProps) {
       {isHover && (
         <MessageToolbox
           position="left"
+          msgId={msgId}
           showTimeStamp={showTimeStamp}
           onMouseEnter={() => setIsHover(true)}
           onMouseLeave={() => setIsHover(false)}
           onClick={(toolKey) => {
             if (toolKey === "notice" || toolKey === "reply") {
               onClickNotice(content);
+            }
+            if (toolKey === "reply") {
               onClickReply(content);
+            }
+            if (toolKey === "emojireact") {
+              // setReact({ id: msgId, open: !react.open });
             }
           }}
         />
@@ -153,7 +163,7 @@ const UserName = styled("span")(() => {
 
 const Contents = styled(Box)(() => {
   return {
-    gap: "5px",
+    gap: "4px",
     display: "flex",
     flexDirection: "column",
   };
