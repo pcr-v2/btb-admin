@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import EmojiReact from "@/app/(main)/realtime-chat/messagePart/EmojiReact";
 import MessageToolbox from "@/app/(main)/realtime-chat/messagePart/MessageToolbox";
 import SelectedEmoji from "@/app/(main)/realtime-chat/messagePart/SelectedEmoji";
+import { createEmojiReactAction } from "@/app/_actions/chats/createEmojiReactAction";
 import { IMessage } from "@/app/_components/SocketProvider";
 import Anxious from "@/assets/emoji/anxious.png";
 import Done from "@/assets/emoji/done.png";
@@ -26,12 +27,12 @@ export type TSelectedEmoji = {
   imgUrl: string;
   userName: string;
   profileImg: string;
-  time: string;
+  time?: string;
 };
 
 interface IProps {
   message: IMessage;
-  msgId: number;
+  msgId: string;
   userInfo: {
     userName: string;
     profileImg: string;
@@ -55,12 +56,12 @@ export default function MyMessage(props: IProps) {
 
   const [isHover, setIsHover] = useState(false);
   const [showEmojiReact, setShowEmojiReact] = useState({
-    msgId: 0,
+    msgId: "",
     open: false,
   });
   const [selectedEmoji, setSelectedEmoji] = useState<TSelectedEmoji[]>([]);
 
-  const handleToolbox = (toolKey: string, msgId: number) => {
+  const handleToolbox = (toolKey: string, msgId: string) => {
     if (toolKey === "notice") {
       onClickNotice(message.content);
       return;
@@ -75,8 +76,17 @@ export default function MyMessage(props: IProps) {
     }
   };
 
-  const handleSelectEmoji = (selectedEmojiUrl: string) => {
+  const handleSelectEmoji = async (selectedEmojiUrl: string) => {
     setShowEmojiReact({ msgId: msgId, open: false });
+
+    const res = await createEmojiReactAction({
+      msgId: msgId,
+      userName: userInfo.userName,
+      profileImg: userInfo.profileImg,
+      emojiKey: selectedEmojiUrl,
+    });
+
+    console.log(res);
 
     setSelectedEmoji((prev) => {
       const exists = prev.find(
@@ -116,6 +126,8 @@ export default function MyMessage(props: IProps) {
       }
     });
   };
+
+  console.log("showEmojiReact", showEmojiReact);
 
   const reClickSelectedEmoji = (emojiUrl: string) => {
     setSelectedEmoji(
@@ -166,6 +178,22 @@ export default function MyMessage(props: IProps) {
             </WithEmojiMessageBox>
           )}
         </Message>
+
+        <div style={{ display: "flex", gap: "4px" }}>
+          {message.emojiReact &&
+            message.emojiReact.map((react, index) => {
+              if (react.emojiKey != null) {
+                return (
+                  <img
+                    key={index}
+                    src={react.emojiKey}
+                    alt=""
+                    style={{ width: "20px", height: "20px" }}
+                  />
+                );
+              }
+            })}
+        </div>
       </Content>
 
       {showEmojiReact.msgId === msgId && showEmojiReact.open && (
@@ -173,6 +201,7 @@ export default function MyMessage(props: IProps) {
           onAnimate={showEmojiReact.open}
           onHoverStart={() => setIsHover(false)}
           onClickEmoji={(selectedEmojiUrl: string) =>
+            // 이모지 add
             handleSelectEmoji(selectedEmojiUrl)
           }
         />
@@ -180,8 +209,10 @@ export default function MyMessage(props: IProps) {
 
       {selectedEmoji && (
         <SelectedEmoji
+          prevSelectedEmoji={message.emojiReact as any}
           selectedEmoji={selectedEmoji}
           onClickSelectedEmoji={(emojiUrl: string) =>
+            // 이모지 delete
             reClickSelectedEmoji(emojiUrl)
           }
         />

@@ -17,8 +17,8 @@ interface IProps {
   showTimeStamp: boolean;
   onMouseEnter: () => void;
   onMouseLeave: () => void;
-  msgId: number;
-  onClick: (toolKey: "notice" | "reply" | "emojireact", msgId: number) => void;
+  msgId: string;
+  onClick: (toolKey: "notice" | "reply" | "emojireact", msgId: string) => void;
 }
 
 const ToolboxList: TToolbox[] = [

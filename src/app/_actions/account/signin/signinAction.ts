@@ -17,6 +17,7 @@ import {
 } from "@/config/config";
 import { TOKEN_SECRET } from "@/config/server";
 import { mysqlPrisma } from "@/lib/prisma";
+import { mongodbPrisma } from "@/lib/prisma";
 
 export type Authentication = {
   sub: string;
@@ -82,6 +83,10 @@ export async function signinAction(
 
     cookies().set(ACCESS_TOKEN_KEY!!, accessToken);
     cookies().set(REFRESH_TOKEN_KEY!!, refreshToken);
+
+    const res22 = await mongodbPrisma.chats.findMany();
+
+    console.log(res22, "res22");
 
     return {
       code: "SUCCESS",

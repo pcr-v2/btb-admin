@@ -6,12 +6,19 @@ import React from "react";
 import { TSelectedEmoji } from "@/app/(main)/realtime-chat/messagePart/MyMessage";
 
 interface IProps {
+  prevSelectedEmoji: TSelectedEmoji[];
   selectedEmoji: TSelectedEmoji[];
   onClickSelectedEmoji: (emojiUrl: string) => void;
 }
 
 export default function SelectedEmoji(props: IProps) {
-  const { selectedEmoji, onClickSelectedEmoji } = props;
+  const { selectedEmoji, onClickSelectedEmoji, prevSelectedEmoji } = props;
+
+  const test = [];
+
+  if (prevSelectedEmoji != null && prevSelectedEmoji.length > 0) {
+    prevSelectedEmoji.map((el) => selectedEmoji.push(el));
+  }
 
   return (
     <Wrapper>

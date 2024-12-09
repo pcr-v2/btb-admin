@@ -20,7 +20,8 @@ interface IProps {
   userName: string;
   profileImg?: string;
   timeStamp: string;
-  msgId: number;
+  emojiReact: { userName: string; profileImg: string; emojiKey: string }[];
+  msgId: string;
   userInfo: { userName: string; profileImg: string };
   showTimeStamp: boolean;
   onClickNotice: (value: string) => void;
@@ -33,6 +34,7 @@ export default function OtherMessage(props: IProps) {
     userName,
     profileImg,
     emoji,
+    emojiReact,
     userInfo,
     timeStamp,
     showTimeStamp,
@@ -42,7 +44,7 @@ export default function OtherMessage(props: IProps) {
   } = props;
 
   const [isHover, setIsHover] = useState(false);
-  const [emojiReact, setEmojiReact] = useState({ id: 0, opne: false });
+  // const [emojiReact, setEmojiReact] = useState({ id: "", opne: false });
 
   return (
     <Wrapper
@@ -84,6 +86,22 @@ export default function OtherMessage(props: IProps) {
               </WithEmojiMessageBox>
             )}
           </Message>
+
+          <div style={{ display: "flex", gap: "4px" }}>
+            {emojiReact &&
+              emojiReact.map((react, index) => {
+                if (react.emojiKey != null) {
+                  return (
+                    <img
+                      key={index}
+                      src={react.emojiKey}
+                      alt=""
+                      style={{ width: "20px", height: "20px" }}
+                    />
+                  );
+                }
+              })}
+          </div>
         </Contents>
       </Box>
       {showTimeStamp && (

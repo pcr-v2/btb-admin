@@ -1,0 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "./generated/mongodb"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("MONGO_DATABASE_URL")
+}
+
+enum EmojiType {
+  Emoji
+  Picture
+  Video
+}
+
+type TEmojiReact {
+  userName   String
+  profileImg String
+  emojiKey   String
+}
+
+model chats {
+  id         String        @id @default(auto()) @map("_id") @db.ObjectId
+  msgId      String        @unique
+  content    String
+  emojiKey   String
+  emojiType  EmojiType
+  profileImg String
+  timeStamp  String
+  userName   String
+  emojiReact TEmojiReact[]
+}

@@ -25,11 +25,13 @@ interface IContent {
 }
 
 export interface IMessage {
+  msgId: string;
   userName: string;
   emoji: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
   content: string;
-  profileImg?: string;
+  profileImg: string;
   timeStamp: string;
+  emojiReact: { userName: string; profileImg: string; emojiKey: string }[];
 }
 
 interface IServerToClientEvents {

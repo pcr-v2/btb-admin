@@ -52,7 +52,7 @@ export default function MessagePart(props: IProps) {
               <MyMessage
                 userInfo={userInfo}
                 message={message}
-                msgId={index}
+                msgId={message.msgId}
                 showTimeStamp={showTimeStamp}
                 onClickNotice={(value) => setNotice(value)}
                 onClickReply={(value) => onClickReply(value)}
@@ -60,7 +60,7 @@ export default function MessagePart(props: IProps) {
             ) : (
               <OtherMessage
                 {...message}
-                msgId={index}
+                msgId={message.msgId}
                 userInfo={userInfo}
                 showTimeStamp={showTimeStamp}
                 onClickNotice={(value) => setNotice(value)}

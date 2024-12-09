@@ -17,6 +17,8 @@ import PreviewDim from "@/app/(main)/realtime-chat/attachImage/PreviewDim";
 import ChatInputPart from "@/app/(main)/realtime-chat/chatInput";
 import MessagePart from "@/app/(main)/realtime-chat/messagePart";
 import { GetUserResponse } from "@/app/_actions/account/auth/getUserSchema";
+import { createChatAction } from "@/app/_actions/chats/createChatAction";
+import { getChatAction } from "@/app/_actions/chats/getChatAction";
 import { IMessage, useSocket } from "@/app/_components/SocketProvider";
 import ChatInput from "@/app/_components/common/ChatInput";
 import Emoji_Add from "@/assets/icon/emoji-add.svg";
@@ -102,6 +104,14 @@ export default function Chat(props: IProps) {
         profileImg: getUserRes.data.profile_img,
       });
       sendUserInfo(getUserRes.data.name, getUserRes.data.profile_img);
+
+      getChatAction().then((res) => {
+        if (res.code === "SUCCESS") {
+          console.log(res.data);
+
+          setMessages(res.data);
+        }
+      });
     }
   }, []);
 
@@ -130,6 +140,16 @@ export default function Chat(props: IProps) {
         profileImg: userInfo.profileImg,
         timeStamp: dayjs().format("HH:mm"),
       });
+
+      const res = await createChatAction({
+        userName: userInfo.userName,
+        emoji: selectedEmoji,
+        content: currentMessage,
+        profileImg: userInfo.profileImg,
+        timeStamp: dayjs().format("HH:mm"),
+      });
+
+      console.log("클라이언트 res ", res);
     } catch (error) {
       console.error("메시지 전송 실패:", error);
     }
@@ -140,6 +160,9 @@ export default function Chat(props: IProps) {
 
   useEffect(() => {
     if (currentMessage !== "") {
+      if (currentMessage.length >= 2) {
+        return;
+      }
       setCheckTypingUsers({
         userName: userInfo.userName,
         profileImg: userInfo.profileImg,
