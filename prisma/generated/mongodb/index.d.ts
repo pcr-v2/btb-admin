@@ -898,10 +898,10 @@ export namespace Prisma {
     id: string | null
     msgId: string | null
     content: string | null
-    emojiKey: string | null
-    emojiType: $Enums.EmojiType | null
+    attachedImgKey: string | null
+    attachedImgType: $Enums.EmojiType | null
     profileImg: string | null
-    timeStamp: string | null
+    timeStamp: Date | null
     userName: string | null
   }
 
@@ -909,10 +909,10 @@ export namespace Prisma {
     id: string | null
     msgId: string | null
     content: string | null
-    emojiKey: string | null
-    emojiType: $Enums.EmojiType | null
+    attachedImgKey: string | null
+    attachedImgType: $Enums.EmojiType | null
     profileImg: string | null
-    timeStamp: string | null
+    timeStamp: Date | null
     userName: string | null
   }
 
@@ -920,8 +920,8 @@ export namespace Prisma {
     id: number
     msgId: number
     content: number
-    emojiKey: number
-    emojiType: number
+    attachedImgKey: number
+    attachedImgType: number
     profileImg: number
     timeStamp: number
     userName: number
@@ -933,8 +933,8 @@ export namespace Prisma {
     id?: true
     msgId?: true
     content?: true
-    emojiKey?: true
-    emojiType?: true
+    attachedImgKey?: true
+    attachedImgType?: true
     profileImg?: true
     timeStamp?: true
     userName?: true
@@ -944,8 +944,8 @@ export namespace Prisma {
     id?: true
     msgId?: true
     content?: true
-    emojiKey?: true
-    emojiType?: true
+    attachedImgKey?: true
+    attachedImgType?: true
     profileImg?: true
     timeStamp?: true
     userName?: true
@@ -955,8 +955,8 @@ export namespace Prisma {
     id?: true
     msgId?: true
     content?: true
-    emojiKey?: true
-    emojiType?: true
+    attachedImgKey?: true
+    attachedImgType?: true
     profileImg?: true
     timeStamp?: true
     userName?: true
@@ -1039,10 +1039,10 @@ export namespace Prisma {
     id: string
     msgId: string
     content: string
-    emojiKey: string
-    emojiType: $Enums.EmojiType
+    attachedImgKey: string
+    attachedImgType: $Enums.EmojiType
     profileImg: string
-    timeStamp: string
+    timeStamp: Date
     userName: string
     _count: ChatsCountAggregateOutputType | null
     _min: ChatsMinAggregateOutputType | null
@@ -1067,8 +1067,8 @@ export namespace Prisma {
     id?: boolean
     msgId?: boolean
     content?: boolean
-    emojiKey?: boolean
-    emojiType?: boolean
+    attachedImgKey?: boolean
+    attachedImgType?: boolean
     profileImg?: boolean
     timeStamp?: boolean
     userName?: boolean
@@ -1080,8 +1080,8 @@ export namespace Prisma {
     id?: boolean
     msgId?: boolean
     content?: boolean
-    emojiKey?: boolean
-    emojiType?: boolean
+    attachedImgKey?: boolean
+    attachedImgType?: boolean
     profileImg?: boolean
     timeStamp?: boolean
     userName?: boolean
@@ -1096,10 +1096,10 @@ export namespace Prisma {
       id: string
       msgId: string
       content: string
-      emojiKey: string
-      emojiType: $Enums.EmojiType
+      attachedImgKey: string
+      attachedImgType: $Enums.EmojiType
       profileImg: string
-      timeStamp: string
+      timeStamp: Date
       userName: string
     }, ExtArgs["result"]["chats"]>
     composites: {
@@ -1498,10 +1498,10 @@ export namespace Prisma {
     readonly id: FieldRef<"chats", 'String'>
     readonly msgId: FieldRef<"chats", 'String'>
     readonly content: FieldRef<"chats", 'String'>
-    readonly emojiKey: FieldRef<"chats", 'String'>
-    readonly emojiType: FieldRef<"chats", 'EmojiType'>
+    readonly attachedImgKey: FieldRef<"chats", 'String'>
+    readonly attachedImgType: FieldRef<"chats", 'EmojiType'>
     readonly profileImg: FieldRef<"chats", 'String'>
-    readonly timeStamp: FieldRef<"chats", 'String'>
+    readonly timeStamp: FieldRef<"chats", 'DateTime'>
     readonly userName: FieldRef<"chats", 'String'>
   }
     
@@ -1851,8 +1851,8 @@ export namespace Prisma {
     id: 'id',
     msgId: 'msgId',
     content: 'content',
-    emojiKey: 'emojiKey',
-    emojiType: 'emojiType',
+    attachedImgKey: 'attachedImgKey',
+    attachedImgType: 'attachedImgType',
     profileImg: 'profileImg',
     timeStamp: 'timeStamp',
     userName: 'userName'
@@ -1911,6 +1911,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'DateTime'
+   */
+  export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
+    
+
+
+  /**
+   * Reference to a field of type 'DateTime[]'
+   */
+  export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+  /**
    * Reference to a field of type 'Int'
    */
   export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
@@ -1934,10 +1948,10 @@ export namespace Prisma {
     id?: StringFilter<"chats"> | string
     msgId?: StringFilter<"chats"> | string
     content?: StringFilter<"chats"> | string
-    emojiKey?: StringFilter<"chats"> | string
-    emojiType?: EnumEmojiTypeFilter<"chats"> | $Enums.EmojiType
+    attachedImgKey?: StringFilter<"chats"> | string
+    attachedImgType?: EnumEmojiTypeFilter<"chats"> | $Enums.EmojiType
     profileImg?: StringFilter<"chats"> | string
-    timeStamp?: StringFilter<"chats"> | string
+    timeStamp?: DateTimeFilter<"chats"> | Date | string
     userName?: StringFilter<"chats"> | string
     emojiReact?: TEmojiReactCompositeListFilter | TEmojiReactObjectEqualityInput[]
   }
@@ -1946,8 +1960,8 @@ export namespace Prisma {
     id?: SortOrder
     msgId?: SortOrder
     content?: SortOrder
-    emojiKey?: SortOrder
-    emojiType?: SortOrder
+    attachedImgKey?: SortOrder
+    attachedImgType?: SortOrder
     profileImg?: SortOrder
     timeStamp?: SortOrder
     userName?: SortOrder
@@ -1961,10 +1975,10 @@ export namespace Prisma {
     OR?: chatsWhereInput[]
     NOT?: chatsWhereInput | chatsWhereInput[]
     content?: StringFilter<"chats"> | string
-    emojiKey?: StringFilter<"chats"> | string
-    emojiType?: EnumEmojiTypeFilter<"chats"> | $Enums.EmojiType
+    attachedImgKey?: StringFilter<"chats"> | string
+    attachedImgType?: EnumEmojiTypeFilter<"chats"> | $Enums.EmojiType
     profileImg?: StringFilter<"chats"> | string
-    timeStamp?: StringFilter<"chats"> | string
+    timeStamp?: DateTimeFilter<"chats"> | Date | string
     userName?: StringFilter<"chats"> | string
     emojiReact?: TEmojiReactCompositeListFilter | TEmojiReactObjectEqualityInput[]
   }, "id" | "msgId">
@@ -1973,8 +1987,8 @@ export namespace Prisma {
     id?: SortOrder
     msgId?: SortOrder
     content?: SortOrder
-    emojiKey?: SortOrder
-    emojiType?: SortOrder
+    attachedImgKey?: SortOrder
+    attachedImgType?: SortOrder
     profileImg?: SortOrder
     timeStamp?: SortOrder
     userName?: SortOrder
@@ -1990,10 +2004,10 @@ export namespace Prisma {
     id?: StringWithAggregatesFilter<"chats"> | string
     msgId?: StringWithAggregatesFilter<"chats"> | string
     content?: StringWithAggregatesFilter<"chats"> | string
-    emojiKey?: StringWithAggregatesFilter<"chats"> | string
-    emojiType?: EnumEmojiTypeWithAggregatesFilter<"chats"> | $Enums.EmojiType
+    attachedImgKey?: StringWithAggregatesFilter<"chats"> | string
+    attachedImgType?: EnumEmojiTypeWithAggregatesFilter<"chats"> | $Enums.EmojiType
     profileImg?: StringWithAggregatesFilter<"chats"> | string
-    timeStamp?: StringWithAggregatesFilter<"chats"> | string
+    timeStamp?: DateTimeWithAggregatesFilter<"chats"> | Date | string
     userName?: StringWithAggregatesFilter<"chats"> | string
   }
 
@@ -2001,10 +2015,10 @@ export namespace Prisma {
     id?: string
     msgId: string
     content: string
-    emojiKey: string
-    emojiType: $Enums.EmojiType
+    attachedImgKey: string
+    attachedImgType: $Enums.EmojiType
     profileImg: string
-    timeStamp: string
+    timeStamp: Date | string
     userName: string
     emojiReact?: XOR<TEmojiReactListCreateEnvelopeInput, TEmojiReactCreateInput> | TEmojiReactCreateInput[]
   }
@@ -2013,10 +2027,10 @@ export namespace Prisma {
     id?: string
     msgId: string
     content: string
-    emojiKey: string
-    emojiType: $Enums.EmojiType
+    attachedImgKey: string
+    attachedImgType: $Enums.EmojiType
     profileImg: string
-    timeStamp: string
+    timeStamp: Date | string
     userName: string
     emojiReact?: XOR<TEmojiReactListCreateEnvelopeInput, TEmojiReactCreateInput> | TEmojiReactCreateInput[]
   }
@@ -2024,10 +2038,10 @@ export namespace Prisma {
   export type chatsUpdateInput = {
     msgId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
-    emojiKey?: StringFieldUpdateOperationsInput | string
-    emojiType?: EnumEmojiTypeFieldUpdateOperationsInput | $Enums.EmojiType
+    attachedImgKey?: StringFieldUpdateOperationsInput | string
+    attachedImgType?: EnumEmojiTypeFieldUpdateOperationsInput | $Enums.EmojiType
     profileImg?: StringFieldUpdateOperationsInput | string
-    timeStamp?: StringFieldUpdateOperationsInput | string
+    timeStamp?: DateTimeFieldUpdateOperationsInput | Date | string
     userName?: StringFieldUpdateOperationsInput | string
     emojiReact?: XOR<TEmojiReactListUpdateEnvelopeInput, TEmojiReactCreateInput> | TEmojiReactCreateInput[]
   }
@@ -2035,10 +2049,10 @@ export namespace Prisma {
   export type chatsUncheckedUpdateInput = {
     msgId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
-    emojiKey?: StringFieldUpdateOperationsInput | string
-    emojiType?: EnumEmojiTypeFieldUpdateOperationsInput | $Enums.EmojiType
+    attachedImgKey?: StringFieldUpdateOperationsInput | string
+    attachedImgType?: EnumEmojiTypeFieldUpdateOperationsInput | $Enums.EmojiType
     profileImg?: StringFieldUpdateOperationsInput | string
-    timeStamp?: StringFieldUpdateOperationsInput | string
+    timeStamp?: DateTimeFieldUpdateOperationsInput | Date | string
     userName?: StringFieldUpdateOperationsInput | string
     emojiReact?: XOR<TEmojiReactListUpdateEnvelopeInput, TEmojiReactCreateInput> | TEmojiReactCreateInput[]
   }
@@ -2047,10 +2061,10 @@ export namespace Prisma {
     id?: string
     msgId: string
     content: string
-    emojiKey: string
-    emojiType: $Enums.EmojiType
+    attachedImgKey: string
+    attachedImgType: $Enums.EmojiType
     profileImg: string
-    timeStamp: string
+    timeStamp: Date | string
     userName: string
     emojiReact?: XOR<TEmojiReactListCreateEnvelopeInput, TEmojiReactCreateInput> | TEmojiReactCreateInput[]
   }
@@ -2058,10 +2072,10 @@ export namespace Prisma {
   export type chatsUpdateManyMutationInput = {
     msgId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
-    emojiKey?: StringFieldUpdateOperationsInput | string
-    emojiType?: EnumEmojiTypeFieldUpdateOperationsInput | $Enums.EmojiType
+    attachedImgKey?: StringFieldUpdateOperationsInput | string
+    attachedImgType?: EnumEmojiTypeFieldUpdateOperationsInput | $Enums.EmojiType
     profileImg?: StringFieldUpdateOperationsInput | string
-    timeStamp?: StringFieldUpdateOperationsInput | string
+    timeStamp?: DateTimeFieldUpdateOperationsInput | Date | string
     userName?: StringFieldUpdateOperationsInput | string
     emojiReact?: XOR<TEmojiReactListUpdateEnvelopeInput, TEmojiReactCreateInput> | TEmojiReactCreateInput[]
   }
@@ -2069,10 +2083,10 @@ export namespace Prisma {
   export type chatsUncheckedUpdateManyInput = {
     msgId?: StringFieldUpdateOperationsInput | string
     content?: StringFieldUpdateOperationsInput | string
-    emojiKey?: StringFieldUpdateOperationsInput | string
-    emojiType?: EnumEmojiTypeFieldUpdateOperationsInput | $Enums.EmojiType
+    attachedImgKey?: StringFieldUpdateOperationsInput | string
+    attachedImgType?: EnumEmojiTypeFieldUpdateOperationsInput | $Enums.EmojiType
     profileImg?: StringFieldUpdateOperationsInput | string
-    timeStamp?: StringFieldUpdateOperationsInput | string
+    timeStamp?: DateTimeFieldUpdateOperationsInput | Date | string
     userName?: StringFieldUpdateOperationsInput | string
     emojiReact?: XOR<TEmojiReactListUpdateEnvelopeInput, TEmojiReactCreateInput> | TEmojiReactCreateInput[]
   }
@@ -2099,6 +2113,17 @@ export namespace Prisma {
     not?: NestedEnumEmojiTypeFilter<$PrismaModel> | $Enums.EmojiType
   }
 
+  export type DateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
+  }
+
   export type TEmojiReactCompositeListFilter = {
     equals?: TEmojiReactObjectEqualityInput[]
     every?: TEmojiReactWhereInput
@@ -2122,8 +2147,8 @@ export namespace Prisma {
     id?: SortOrder
     msgId?: SortOrder
     content?: SortOrder
-    emojiKey?: SortOrder
-    emojiType?: SortOrder
+    attachedImgKey?: SortOrder
+    attachedImgType?: SortOrder
     profileImg?: SortOrder
     timeStamp?: SortOrder
     userName?: SortOrder
@@ -2133,8 +2158,8 @@ export namespace Prisma {
     id?: SortOrder
     msgId?: SortOrder
     content?: SortOrder
-    emojiKey?: SortOrder
-    emojiType?: SortOrder
+    attachedImgKey?: SortOrder
+    attachedImgType?: SortOrder
     profileImg?: SortOrder
     timeStamp?: SortOrder
     userName?: SortOrder
@@ -2144,8 +2169,8 @@ export namespace Prisma {
     id?: SortOrder
     msgId?: SortOrder
     content?: SortOrder
-    emojiKey?: SortOrder
-    emojiType?: SortOrder
+    attachedImgKey?: SortOrder
+    attachedImgType?: SortOrder
     profileImg?: SortOrder
     timeStamp?: SortOrder
     userName?: SortOrder
@@ -2179,6 +2204,20 @@ export namespace Prisma {
     _max?: NestedEnumEmojiTypeFilter<$PrismaModel>
   }
 
+  export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
   export type TEmojiReactListCreateEnvelopeInput = {
     set?: TEmojiReactCreateInput | TEmojiReactCreateInput[]
   }
@@ -2195,6 +2234,10 @@ export namespace Prisma {
 
   export type EnumEmojiTypeFieldUpdateOperationsInput = {
     set?: $Enums.EmojiType
+  }
+
+  export type DateTimeFieldUpdateOperationsInput = {
+    set?: Date | string
   }
 
   export type TEmojiReactListUpdateEnvelopeInput = {
@@ -2223,6 +2266,17 @@ export namespace Prisma {
     in?: $Enums.EmojiType[] | ListEnumEmojiTypeFieldRefInput<$PrismaModel>
     notIn?: $Enums.EmojiType[] | ListEnumEmojiTypeFieldRefInput<$PrismaModel>
     not?: NestedEnumEmojiTypeFilter<$PrismaModel> | $Enums.EmojiType
+  }
+
+  export type NestedDateTimeFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeFilter<$PrismaModel> | Date | string
   }
 
   export type TEmojiReactWhereInput = {
@@ -2270,6 +2324,20 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumEmojiTypeFilter<$PrismaModel>
     _max?: NestedEnumEmojiTypeFilter<$PrismaModel>
+  }
+
+  export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    in?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    notIn?: Date[] | string[] | ListDateTimeFieldRefInput<$PrismaModel>
+    lt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    lte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gt?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    gte?: Date | string | DateTimeFieldRefInput<$PrismaModel>
+    not?: NestedDateTimeWithAggregatesFilter<$PrismaModel> | Date | string
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedDateTimeFilter<$PrismaModel>
+    _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
   export type TEmojiReactUpdateManyInput = {

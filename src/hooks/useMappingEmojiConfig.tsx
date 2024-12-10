@@ -2,6 +2,7 @@
 
 import { styled } from "@mui/material";
 
+import { TAttachedImage } from "@/app/(main)/realtime-chat";
 import { EmojiData } from "@/config/emojiData";
 import { PictureData } from "@/config/pictureData";
 import { VideoPictureData } from "@/config/videoPictureData";
@@ -11,18 +12,16 @@ interface IProps {
   emojiKey: string;
 }
 
-export default function useMappingEmojiConfig(props: IProps) {
-  const { emojiKey, emojiType } = props;
+export default function useMappingEmojiConfig(data: TAttachedImage) {
+  const { key, type } = data;
 
-  if (emojiType === "Picture") {
-    const pictureValue = PictureData.find((data) => data.key === emojiKey);
+  if (type === "Picture") {
+    const pictureValue = PictureData.find((data) => data.key === key);
     return <PreviewImg src={pictureValue?.url} alt="picture" />;
   }
 
-  if (emojiType === "Video") {
-    const videoPictureValue = VideoPictureData.find(
-      (data) => data.key === emojiKey,
-    );
+  if (type === "Video") {
+    const videoPictureValue = VideoPictureData.find((data) => data.key === key);
     return (
       <PreviewVideo loop autoPlay playsInline>
         <source src={videoPictureValue?.url} />
@@ -30,7 +29,7 @@ export default function useMappingEmojiConfig(props: IProps) {
     );
   }
 
-  return <PreviewImg src={EmojiData[emojiKey]} alt="emoji" />;
+  return <PreviewImg src={EmojiData[key]} alt="emoji" />;
 }
 
 const PreviewImg = styled("img")(() => {

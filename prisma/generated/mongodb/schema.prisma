@@ -21,13 +21,13 @@ type TEmojiReact {
 }
 
 model chats {
-  id         String        @id @default(auto()) @map("_id") @db.ObjectId
-  msgId      String        @unique
-  content    String
-  emojiKey   String
-  emojiType  EmojiType
-  profileImg String
-  timeStamp  String
-  userName   String
-  emojiReact TEmojiReact[]
+  id              String        @id @default(auto()) @map("_id") @db.ObjectId
+  msgId           String        @unique
+  content         String
+  attachedImgKey  String
+  attachedImgType EmojiType
+  profileImg      String
+  timeStamp       DateTime
+  userName        String
+  emojiReact      TEmojiReact[]
 }

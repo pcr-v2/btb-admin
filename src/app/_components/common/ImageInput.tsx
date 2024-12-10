@@ -6,8 +6,8 @@ import { animate, motion } from "framer-motion";
 import React, { useEffect, useRef, useState } from "react";
 
 import EmojiList from "@/app/(main)/realtime-chat/attachImage/EmojiList";
-import MyMessage from "@/app/(main)/realtime-chat/messagePart/MyMessage";
 import SomeOneMessage from "@/app/(main)/realtime-chat/messagePart/SomeOneMessage";
+import MyMessage from "@/app/(main)/realtime-chat/messagesPart/MyMessage";
 import { GetUserResponse } from "@/app/_actions/account/auth/getUserSchema";
 import { IMessage, useSocket } from "@/app/_components/SocketProvider";
 import ChatInput from "@/app/_components/common/ChatInput";

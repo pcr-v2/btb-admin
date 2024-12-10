@@ -6,6 +6,6 @@ export default async function page() {
   const res = await getUser();
 
   if (res.data != null) {
-    return redirect("/dashboard");
+    return redirect("/realtime-chat");
   }
 }

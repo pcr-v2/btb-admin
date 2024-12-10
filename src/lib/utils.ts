@@ -48,23 +48,14 @@ export const isNameFormat = (name: string) => {
 };
 
 export const mappingEmoji = (value: string) => {
-  // EmojiData 배열을 객체로 변환
-
-  const emojiMap: TEmoji = EmojiData.reduce((acc, curr) => {
-    const key = Object.keys(curr)[0]; // 객체의 키를 가져옵니다.
-    const val = curr[key];
-    acc[key] = val; // 키-값 쌍으로 추가
-    return acc;
-  }, {} as TEmoji);
-
   // 텍스트를 ::something:: 기준으로 나누기
   const splitText = value.split(/(::.+?::)/g).filter(Boolean);
 
   // 이모지 치환
   const mappedText = splitText.map((part) => {
     // 이모지 키가 있다면 <img> 태그로 치환, 없으면 그대로 반환
-    if (emojiMap[part]) {
-      return `<img src="${emojiMap[part]}" alt="${part}" style="width:32px; height:32px;"/>`;
+    if (EmojiData[part]) {
+      return `<img src="${EmojiData[part]}" alt="${part}" style="width:32px; height:32px;"/>`;
     }
     return part;
   });
@@ -86,69 +77,3 @@ export const focusContentEditableTextToEnd = (element: HTMLElement) => {
   selection?.removeAllRanges();
   selection?.addRange(newRange);
 };
-
-{
-  /* <ChatInput
-            label="메세지를 입력해주세요"
-            value={currentMessage}
-            name="message"
-            onChange={(e) => setCurrentMessage(e.target.value)}
-            children={
-              <Box sx={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                <motion.img
-                  initial="beforeHover"
-                  whileHover="onHover"
-                  variants={{
-                    beforeHover: { scale: 1 },
-                    onHover: { scale: 1.2 },
-                  }}
-                  src={Emoji_Add.src}
-                  alt="add"
-                  style={{ width: "32px", height: "32px", cursor: "pointer" }}
-                  onClick={() => setOnClickEmoji(!onClickEmoji)}
-                />
-                <EndAdormentButton
-                  variant="contained"
-                  onClick={sendMessage}
-                  type="submit"
-                >
-                  전송
-                </EndAdormentButton>
-              </Box>
-            }
-            disabled={false}
-          /> */
-}
-
-{
-  /* <ImageInput
-            msg={currentMessage}
-            children={
-              <Box sx={{ display: "flex", gap: "8px", alignItems: "center" }}>
-                <motion.img
-                  initial="beforeHover"
-                  whileHover="onHover"
-                  variants={{
-                    beforeHover: { scale: 1 },
-                    onHover: { scale: 1.2 },
-                  }}
-                  src={Emoji_Add.src}
-                  alt="add"
-                  style={{ width: "32px", height: "32px", cursor: "pointer" }}
-                  onClick={() => setOnClickEmoji((prev) => !prev)}
-                />
-                <EndAdormentButton
-                  variant="contained"
-                  onClick={sendMessage}
-                  type="submit"
-                >
-                  전송
-                </EndAdormentButton>
-              </Box>
-            }
-            onChange={(value) => {
-              console.log("시발", value);
-              setCurrentMessage((prev) => prev + value);
-            }}
-          /> */
-}

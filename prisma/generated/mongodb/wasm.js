@@ -114,8 +114,8 @@ exports.Prisma.ChatsScalarFieldEnum = {
   id: 'id',
   msgId: 'msgId',
   content: 'content',
-  emojiKey: 'emojiKey',
-  emojiType: 'emojiType',
+  attachedImgKey: 'attachedImgKey',
+  attachedImgType: 'attachedImgType',
   profileImg: 'profileImg',
   timeStamp: 'timeStamp',
   userName: 'userName'

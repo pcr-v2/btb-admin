@@ -2,15 +2,17 @@
 
 import { Box, styled } from "@mui/material";
 import zIndex from "@mui/material/styles/zIndex";
+import axios from "axios";
 import { count } from "console";
 import { motion, useAnimate } from "framer-motion";
 import { useEffect, useState } from "react";
 
-import EmojiReact from "@/app/(main)/realtime-chat/messagePart/EmojiReact";
-import MessageToolbox from "@/app/(main)/realtime-chat/messagePart/MessageToolbox";
-import SelectedEmoji from "@/app/(main)/realtime-chat/messagePart/SelectedEmoji";
+import EmojiReact from "@/app/(main)/realtime-chat/messagesPart/EmojiReact";
+import MessageToolbox from "@/app/(main)/realtime-chat/messagesPart/MessageToolbox";
+import SelectedEmoji from "@/app/(main)/realtime-chat/messagesPart/SelectedEmoji";
+import { GetUserResponse } from "@/app/_actions/account/auth/getUserSchema";
 import { createEmojiReactAction } from "@/app/_actions/chats/createEmojiReactAction";
-import { IMessage } from "@/app/_components/SocketProvider";
+import { IMessage, useSocket } from "@/app/_components/SocketProvider";
 import Anxious from "@/assets/emoji/anxious.png";
 import Done from "@/assets/emoji/done.png";
 import Headbomb from "@/assets/emoji/headbomb.png";
@@ -23,7 +25,6 @@ import useMappingEmojiConfig from "@/hooks/useMappingEmojiConfig";
 import dayjs from "@/lib/dayjs";
 
 export type TSelectedEmoji = {
-  count: number;
   imgUrl: string;
   userName: string;
   profileImg: string;
@@ -33,24 +34,13 @@ export type TSelectedEmoji = {
 interface IProps {
   message: IMessage;
   msgId: string;
-  userInfo: {
-    userName: string;
-    profileImg: string;
-  };
+  userInfo: Pick<GetUserResponse, "data">["data"];
   showTimeStamp: boolean;
   onClickNotice: (value: string) => void;
-  onClickReply: (value: string) => void;
 }
 
 export default function MyMessage(props: IProps) {
-  const {
-    message,
-    showTimeStamp,
-    msgId,
-    onClickNotice,
-    onClickReply,
-    userInfo,
-  } = props;
+  const { message, showTimeStamp, msgId, onClickNotice, userInfo } = props;
 
   const todayTime = dayjs().format("YY/MM/DD HH:mm");
 
@@ -59,7 +49,19 @@ export default function MyMessage(props: IProps) {
     msgId: "",
     open: false,
   });
-  const [selectedEmoji, setSelectedEmoji] = useState<TSelectedEmoji[]>([]);
+  const [selectedEmoji, setSelectedEmoji] = useState<TSelectedEmoji[]>(
+    (message.emojiReact as any) ?? [],
+  );
+
+  const { test, socket } = useSocket();
+  useEffect(() => {
+    console.log("test id", test?.msgId);
+    console.log("실 id", msgId);
+
+    if (test?.msgId === msgId) {
+      setSelectedEmoji((prev) => [...prev, test]);
+    }
+  }, [socket, test]);
 
   const handleToolbox = (toolKey: string, msgId: string) => {
     if (toolKey === "notice") {
@@ -67,7 +69,7 @@ export default function MyMessage(props: IProps) {
       return;
     }
     if (toolKey === "reply") {
-      onClickReply(message.content);
+      // onClickReply(message.content);
       return;
     }
     if (toolKey === "emojireact") {
@@ -81,74 +83,72 @@ export default function MyMessage(props: IProps) {
 
     const res = await createEmojiReactAction({
       msgId: msgId,
-      userName: userInfo.userName,
-      profileImg: userInfo.profileImg,
+      userName: userInfo.name,
+      profileImg: userInfo.profile_img,
       emojiKey: selectedEmojiUrl,
     });
 
-    console.log(res);
-
-    setSelectedEmoji((prev) => {
-      const exists = prev.find(
-        (emoji) =>
-          emoji.imgUrl === selectedEmojiUrl &&
-          emoji.userName === userInfo.userName,
-      );
-
-      if (exists) {
-        // 중복된 경우 count 증가
-        return prev
-          .map((el) => {
-            if (
-              el.imgUrl === selectedEmojiUrl &&
-              el.userName === userInfo.userName
-            ) {
-              if (el.count > 1) {
-                return { ...el, count: el.count - 1 }; // count 감소
-              }
-              return null; // count가 1이면 이모지를 제거
-            }
-            return el; // 다른 유저의 데이터는 그대로 유지
-          })
-          .filter((el) => el !== null); // null 값 제거
-      } else {
-        // 중복되지 않은 경우 새 항목 추가
-        return [
-          ...prev,
-          {
-            count: 1,
-            imgUrl: selectedEmojiUrl,
-            userName: userInfo.userName,
-            profileImg: userInfo.profileImg,
-            time: todayTime,
-          },
-        ];
-      }
+    await axios.post("/api/reaction", {
+      msgId: msgId,
+      userName: userInfo.name,
+      emoji: selectedEmojiUrl,
+      profileImg: userInfo.profile_img,
+      timeStamp: dayjs().format("HH:mm"),
     });
+
+    // setSelectedEmoji((prev) => {
+    //   // prev가 undefined일 경우 빈 배열로 초기화
+    //   if (!prev) return [];
+
+    //   if (prev.length < 1) return [];
+    //   const existing = prev.find(
+    //     (emoji) =>
+    //       emoji.imgUrl === selectedEmojiUrl &&
+    //       emoji.userName === userInfo.userName,
+    //   );
+
+    //   if (existing) {
+    //     return prev.map((emoji) =>
+    //       emoji.imgUrl === selectedEmojiUrl &&
+    //       emoji.userName === userInfo.userName
+    //         ? { ...emoji, count: emoji.count + 1 }
+    //         : emoji,
+    //     );
+    //   } else {
+    //     return [
+    //       ...prev,
+    //       {
+    //         count: 1,
+    //         imgUrl: selectedEmojiUrl,
+    //         userName: userInfo.userName,
+    //         profileImg: userInfo.profileImg,
+    //         time: todayTime,
+    //       },
+    //     ];
+    //   }
+    // });
   };
 
-  console.log("showEmojiReact", showEmojiReact);
-
-  const reClickSelectedEmoji = (emojiUrl: string) => {
-    setSelectedEmoji(
-      (prev) =>
-        prev
-          .map((emoji) => {
-            if (
-              emoji.imgUrl === emojiUrl &&
-              emoji.userName === userInfo.userName
-            ) {
-              // 현재 유저가 선택한 이모지라면
-              if (emoji.count > 1) {
-                return { ...emoji, count: emoji.count - 1 }; // count 감소
-              }
-              return null; // count가 1이면 제거
-            }
-            return emoji; // 다른 유저의 이모지는 변경하지 않음
-          })
-          .filter((emoji) => emoji !== null), // null인 경우 제거
-    );
-  };
+  // const reClickSelectedEmoji = (emojiUrl: string) => {
+  //   setSelectedEmoji(
+  //     (prev) =>
+  //       prev
+  //         .map((emoji) => {
+  //           if (
+  //             emoji.imgUrl === emojiUrl &&
+  //             emoji.userName === userInfo.userName
+  //           ) {
+  //             // 현재 유저가 선택한 이모지라면
+  //             if (emoji.count > 1) {
+  //               return { ...emoji, count: emoji.count - 1 }; // count 감소
+  //             }
+  //             return null; // count가 1이면 제거
+  //           }
+  //           return emoji; // 다른 유저의 이모지는 변경하지 않음
+  //         })
+  //         .filter((emoji) => emoji !== null), // null인 경우 제거
+  //   );
+  // };
   return (
     <Wrapper
       onHoverStart={() => setIsHover(true)}
@@ -166,34 +166,18 @@ export default function MyMessage(props: IProps) {
       )}
 
       <Content>
-        {showTimeStamp && <TimeStamp>{message.timeStamp}</TimeStamp>}
+        {showTimeStamp && <TimeStamp>{message.timeStamp.toString()}</TimeStamp>}
 
         <Message>
-          {message.emoji.emojiKey === "" ? (
+          {message.attachedImage?.key === "" ? (
             message.content
           ) : (
             <WithEmojiMessageBox>
-              {useMappingEmojiConfig({ ...message.emoji })}
+              {useMappingEmojiConfig({ ...message.attachedImage })}
               {message.content === "" ? "" : message.content}
             </WithEmojiMessageBox>
           )}
         </Message>
-
-        <div style={{ display: "flex", gap: "4px" }}>
-          {message.emojiReact &&
-            message.emojiReact.map((react, index) => {
-              if (react.emojiKey != null) {
-                return (
-                  <img
-                    key={index}
-                    src={react.emojiKey}
-                    alt=""
-                    style={{ width: "20px", height: "20px" }}
-                  />
-                );
-              }
-            })}
-        </div>
       </Content>
 
       {showEmojiReact.msgId === msgId && showEmojiReact.open && (
@@ -209,11 +193,12 @@ export default function MyMessage(props: IProps) {
 
       {selectedEmoji && (
         <SelectedEmoji
-          prevSelectedEmoji={message.emojiReact as any}
+          // prevSelectedEmoji={message.emojiReact as any}
           selectedEmoji={selectedEmoji}
           onClickSelectedEmoji={(emojiUrl: string) =>
             // 이모지 delete
-            reClickSelectedEmoji(emojiUrl)
+            // reClickSelectedEmoji(emojiUrl)
+            {}
           }
         />
       )}

@@ -19,18 +19,26 @@ type TTypingUsers = {
   isTyping: boolean;
 };
 
-interface IContent {
-  emoji: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
-  msg: string;
-}
+type TUserInfo = {
+  userName: string;
+  profileImg: string;
+};
+
+type TEmojiReaction = {
+  userName: string;
+  profileImg: string;
+  msgId: number;
+  emoji: string;
+  timeStamp: string;
+};
 
 export interface IMessage {
   msgId: string;
   userName: string;
-  emoji: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
+  attachedImage: { type: "Emoji" | "Picture" | "Video"; key: string };
   content: string;
   profileImg: string;
-  timeStamp: string;
+  timeStamp: string | Date;
   emojiReact: { userName: string; profileImg: string; emojiKey: string }[];
 }
 
@@ -38,42 +46,23 @@ interface IServerToClientEvents {
   message: (data: IMessage) => void;
   connect: () => void;
   disconnect: () => void;
-  onUserJoin: (userInfo: { userName: string; profileImg: string }) => void;
-  reaction: (reaction: {
-    userName: string;
-    profileImg: string;
-    msgId: number;
-    content: string;
-    time: string;
-  }) => void;
-  onTyping: (data: {
-    userName: string;
-    isTyping: boolean;
-    profileImg: string;
-  }) => void;
+  onUserJoin: (userInfo: TUserInfo) => void;
+  reaction: (reaction: TEmojiReaction) => void;
+  onTyping: (data: TTypingUsers) => void;
 }
 
 interface IClientToServerEvents {
   sendMessage: (data: IMessage) => void;
-  onUserJoin: (userInfo: { userName: string; profileImg: string }) => void;
-  reaction: (reaction: {
-    userName: string;
-    profileImg: string;
-    msgId: number;
-    content: string;
-    time: string;
-  }) => void;
-  onTyping: (data: {
-    userName: string;
-    isTyping: boolean;
-    profileImg: string;
-  }) => void;
+  onUserJoin: (userInfo: TUserInfo) => void;
+  reaction: (reaction: TEmojiReaction) => void;
+  onTyping: (data: TTypingUsers) => void;
 }
 
 type TSocket = Socket<IServerToClientEvents, IClientToServerEvents>;
 
 type TSocketContext = {
   socket: TSocket | null;
+  test: any;
   connectedUsers: { userName: string; profileImg: string }[];
   isConnected: boolean;
   typingUsers: { userName: string; profileImg: string; isTyping: boolean }[];
@@ -84,10 +73,10 @@ type TSocketContext = {
 const SocketContext = createContext<TSocketContext>({
   socket: null,
   isConnected: false,
+  test: [],
   connectedUsers: [{ userName: "", profileImg: "" }],
   typingUsers: [{ userName: "", profileImg: "", isTyping: false }],
   onUserJoin: () => {},
-  // handleTyping: () => {}, // 초기값 설정
 });
 
 export const useSocket = () => {
@@ -110,8 +99,28 @@ export default function SocketProvider(props: IProps) {
 
   const [typingUsers, setTypingUsers] = useState<TTypingUsers[]>([]);
 
+  const [test, setTest] = useState<any>();
+
   const onUserJoin = (userInfo: { userName: string; profileImg: string }) => {
     setConnectedUsers([{ ...userInfo }]);
+  };
+
+  const reaction = (reaction: {
+    userName: string;
+    profileImg: string;
+    msgId: number;
+    emoji: string;
+    timeStamp: string;
+  }) => {
+    console.log(reaction, "asldkfjawoegijawoeijgwo");
+    setTest({
+      count: 1,
+      msgId: reaction.msgId,
+      userName: reaction.userName,
+      profileImg: reaction.profileImg,
+      imgUrl: reaction.emoji,
+      time: reaction.timeStamp,
+    });
   };
 
   const handleTyping = (data: {
@@ -119,12 +128,6 @@ export default function SocketProvider(props: IProps) {
     profileImg: string;
     isTyping: boolean;
   }) => {
-    console.log(
-      "userName 프로바이더 로그",
-      data.userName,
-      data.isTyping,
-      data.profileImg,
-    );
     setTypingUsers((prev) => {
       if (!data.userName) {
         // userName이 빈 문자열인 경우 배열 업데이트 방지
@@ -175,6 +178,7 @@ export default function SocketProvider(props: IProps) {
     socketInstance.on("onUserJoin", onUserJoin);
     socketInstance.on("onTyping", handleTyping);
     socketInstance.on("disconnect", () => setIsConnected(false));
+    socketInstance.on("reaction", reaction);
 
     setSocket(socketInstance);
 
@@ -182,16 +186,25 @@ export default function SocketProvider(props: IProps) {
       socketInstance.off("connect");
       socketInstance.off("onUserJoin", onUserJoin);
       socketInstance.off("onTyping");
-
+      socketInstance.off("reaction", reaction);
       socketInstance.off("disconnect");
 
       socketInstance.disconnect();
     };
   }, []);
 
+  console.log("test", test);
+
   return (
     <SocketContext.Provider
-      value={{ socket, isConnected, onUserJoin, connectedUsers, typingUsers }}
+      value={{
+        socket,
+        isConnected,
+        onUserJoin,
+        connectedUsers,
+        typingUsers,
+        test,
+      }}
     >
       {children}
     </SocketContext.Provider>

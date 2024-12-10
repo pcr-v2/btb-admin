@@ -7,6 +7,7 @@ import {
   CreateChatResponse,
   createChatSchema,
 } from "@/app/_actions/chats/createChatSchema";
+import dayjs from "@/lib/dayjs";
 import { mongodbPrisma } from "@/lib/prisma";
 
 export async function createChatAction(
@@ -20,16 +21,18 @@ export async function createChatAction(
     };
   }
 
+  const today = dayjs();
+
   try {
     const createResult = await mongodbPrisma.chats.create({
       data: {
-        msgId: uuidv4(),
+        msgId: validated.data.msgId,
         userName: validated.data.userName,
-        emojiType: validated.data.emoji.emojiType,
-        emojiKey: validated.data.emoji.emojiKey,
+        attachedImgType: validated.data.attachedImage.type,
+        attachedImgKey: validated.data.attachedImage.key,
         profileImg: validated.data.profileImg,
         content: validated.data.content,
-        timeStamp: validated.data.timeStamp,
+        timeStamp: today.toISOString(),
       },
     });
 

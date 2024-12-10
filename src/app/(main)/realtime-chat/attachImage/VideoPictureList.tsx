@@ -3,17 +3,15 @@
 import { Box, styled } from "@mui/material";
 import { motion } from "framer-motion";
 
+import { TAttachedImage } from "@/app/(main)/realtime-chat";
 import { VideoPictureData } from "@/config/videoPictureData";
 
 interface IProps {
-  onClickEmoji: (
-    emojiType: "Emoji" | "Picture" | "Video",
-    emojiKey: string,
-  ) => void;
+  onClickAttachImg: (data: TAttachedImage) => void;
 }
 
 export default function VideoPictureList(props: IProps) {
-  const { onClickEmoji } = props;
+  const { onClickAttachImg } = props;
 
   return (
     <Wrapper>
@@ -35,7 +33,7 @@ export default function VideoPictureList(props: IProps) {
               loop
               autoPlay
               playsInline
-              onClick={() => onClickEmoji("Video", data.key)}
+              onClick={() => onClickAttachImg({ type: "Video", key: data.key })}
             />
 
             <VideoPictureDesc>{data.krName}</VideoPictureDesc>

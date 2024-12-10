@@ -24,10 +24,10 @@ model chats {
   id         String @id @default(auto()) @map("_id") @db.ObjectId
   msgId      String @unique
   content    String
-  emojiKey   String
-  emojiType  EmojiType
+  attachedImgKey   String
+  attachedImgType  EmojiType
   profileImg String
-  timeStamp  String
+  timeStamp  DateTime
   userName   String
   emojiReact TEmojiReact[]
 }

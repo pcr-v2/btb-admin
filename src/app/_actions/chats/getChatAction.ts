@@ -1,14 +1,13 @@
 "use server";
 
 import { GetChatResponse, TMessage } from "@/app/_actions/chats/getChatSchema";
+import dayjs from "@/lib/dayjs";
 import { mongodbPrisma } from "@/lib/prisma";
 
 export async function getChatAction(): Promise<GetChatResponse> {
   try {
     const getChatResult = await mongodbPrisma.chats.findMany({
-      orderBy: {
-        timeStamp: "asc", // 최신순으로 정렬
-      },
+      orderBy: { timeStamp: "asc" },
       take: 100,
     });
 
@@ -61,9 +60,9 @@ export async function getChatAction(): Promise<GetChatResponse> {
         },
         content: chat.content,
         profileImg: chat.profileImg,
-        timeStamp: chat.timeStamp,
+        timeStamp: dayjs(chat.timeStamp).format("HH:mm"),
         msgId: chat.msgId,
-        emojiReact: emojiReactGrouped, // 가공된 emojiReact 배열
+        emojiReact: emojiReactGrouped,
       };
     });
 

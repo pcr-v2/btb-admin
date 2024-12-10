@@ -3,31 +3,32 @@
 import { Box, styled } from "@mui/material";
 import React from "react";
 
+import { TAttachedImage } from "@/app/(main)/realtime-chat";
 import Close from "@/assets/icon/close-light.svg";
 import { EmojiData } from "@/config/emojiData";
 import { PictureData } from "@/config/pictureData";
 import { VideoPictureData } from "@/config/videoPictureData";
 
 interface IProps {
-  selectedEmoji: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
+  attachedImage: TAttachedImage;
   onClose: () => void;
 }
 
 export default function PreviewDim(props: IProps) {
   const { onClose } = props;
-  const { emojiType, emojiKey } = props.selectedEmoji;
+  const { key, type } = props.attachedImage;
 
   const mappingEmoji = () => {
-    if (emojiType === "Emoji") {
-      return <PreviewImg src={EmojiData[emojiKey]} alt="emoji" />;
+    if (type === "Emoji") {
+      return <PreviewImg src={EmojiData[key]} alt="emoji" />;
     }
-    if (emojiType === "Picture") {
-      const pictureValue = PictureData.find((data) => data.key === emojiKey);
+    if (type === "Picture") {
+      const pictureValue = PictureData.find((data) => data.key === key);
       return <PreviewImg src={pictureValue?.url} alt="picture" />;
     }
-    if (emojiType === "Video") {
+    if (type === "Video") {
       const videoPictureValue = VideoPictureData.find(
-        (data) => data.key === emojiKey,
+        (data) => data.key === key,
       );
       return (
         <PreviewVideo loop autoPlay playsInline>
@@ -39,8 +40,8 @@ export default function PreviewDim(props: IProps) {
 
   return (
     <>
-      {emojiKey && (
-        <DimmedPart emojitype={emojiType}>
+      {key && (
+        <DimmedPart emojitype={type}>
           <CloseImg src={Close.src} alt="close" onClick={onClose} />
           {mappingEmoji()}
         </DimmedPart>

@@ -3,6 +3,7 @@
 import { Box, styled } from "@mui/material";
 import { useState } from "react";
 
+import { TAttachedImage } from "@/app/(main)/realtime-chat";
 import EmojiList from "@/app/(main)/realtime-chat/attachImage/EmojiList";
 import PictureList from "@/app/(main)/realtime-chat/attachImage/PictureList";
 import SwichTab from "@/app/(main)/realtime-chat/attachImage/SwichTab";
@@ -14,33 +15,28 @@ type TShowList = {
 
 interface IProps {
   onClose: () => void;
-  onClickEmoji: (
-    emojiType: "Emoji" | "Picture" | "Video",
-    emojiKey: string,
-  ) => void;
+  onClickAttachImg: (data: TAttachedImage) => void;
 }
 
 export default function AttachImage(props: IProps) {
-  const { onClickEmoji, onClose } = props;
+  const { onClickAttachImg, onClose } = props;
 
   const [showList, setShowList] = useState<TShowList>({ type: "Emoji" });
 
   return (
-    <Wrapper
-      onKeyDown={(e) => {
-        console.log(e.target);
-      }}
-    >
+    <Wrapper>
       <SwichTab
         onClose={onClose}
         handleSwitch={(value: TShowList) => setShowList(value)}
       />
-      {showList.type === "Emoji" && <EmojiList onClickEmoji={onClickEmoji} />}
+      {showList.type === "Emoji" && (
+        <EmojiList onClickAttachImg={onClickAttachImg} />
+      )}
       {showList.type === "Picture" && (
-        <PictureList onClickEmoji={onClickEmoji} />
+        <PictureList onClickAttachImg={onClickAttachImg} />
       )}
       {showList.type === "Video" && (
-        <VideoPictureList onClickEmoji={onClickEmoji} />
+        <VideoPictureList onClickAttachImg={onClickAttachImg} />
       )}
     </Wrapper>
   );

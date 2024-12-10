@@ -3,17 +3,15 @@
 import { Box, styled } from "@mui/material";
 import { motion } from "framer-motion";
 
+import { TAttachedImage } from "@/app/(main)/realtime-chat";
 import { PictureData } from "@/config/pictureData";
 
 interface IProps {
-  onClickEmoji: (
-    emojiType: "Emoji" | "Picture" | "Video",
-    emojiKey: string,
-  ) => void;
+  onClickAttachImg: (data: TAttachedImage) => void;
 }
 
 export default function PictureList(props: IProps) {
-  const { onClickEmoji } = props;
+  const { onClickAttachImg } = props;
 
   return (
     <Wrapper>
@@ -33,7 +31,9 @@ export default function PictureList(props: IProps) {
             <Picture
               src={data.url}
               alt={data.key}
-              onClick={() => onClickEmoji("Picture", data.key)}
+              onClick={() =>
+                onClickAttachImg({ type: "Picture", key: data.key })
+              }
             />
 
             <PictureDesc>{data.krName}d</PictureDesc>

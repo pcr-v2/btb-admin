@@ -1,24 +1,24 @@
 "use client";
 
 import { Box, styled } from "@mui/material";
-import React from "react";
+import React, { useEffect, useState } from "react";
 
-import { TSelectedEmoji } from "@/app/(main)/realtime-chat/messagePart/MyMessage";
+import { TSelectedEmoji } from "@/app/(main)/realtime-chat/messagesPart/MyMessage";
+import { useSocket } from "@/app/_components/SocketProvider";
 
 interface IProps {
-  prevSelectedEmoji: TSelectedEmoji[];
+  // prevSelectedEmoji: TSelectedEmoji[];
   selectedEmoji: TSelectedEmoji[];
   onClickSelectedEmoji: (emojiUrl: string) => void;
 }
 
 export default function SelectedEmoji(props: IProps) {
-  const { selectedEmoji, onClickSelectedEmoji, prevSelectedEmoji } = props;
+  const { selectedEmoji, onClickSelectedEmoji } = props;
 
-  const test = [];
-
-  if (prevSelectedEmoji != null && prevSelectedEmoji.length > 0) {
-    prevSelectedEmoji.map((el) => selectedEmoji.push(el));
-  }
+  // if (prevSelectedEmoji != null) {
+  //   prevSelectedEmoji.map((el) => selectedEmoji.push(el));
+  // }
+  const { test } = useSocket();
 
   return (
     <Wrapper>
@@ -27,10 +27,10 @@ export default function SelectedEmoji(props: IProps) {
           return (
             <EmojiBox
               key={index}
-              onClick={() => onClickSelectedEmoji(emoji.imgUrl)}
+              onClick={() => onClickSelectedEmoji(emoji?.imgUrl)}
             >
-              <CountSpan>{emoji.count}</CountSpan>
-              <EmojiImg src={emoji.imgUrl} />
+              <CountSpan>{emoji?.count}</CountSpan>
+              <EmojiImg src={emoji?.imgUrl} />
             </EmojiBox>
           );
         })}

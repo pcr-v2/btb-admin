@@ -12,7 +12,7 @@ export type TMessage = {
   emoji: { emojiType: "Emoji" | "Picture" | "Video"; emojiKey: string };
   content: string;
   profileImg: string;
-  timeStamp: string;
+  timeStamp: string | Date;
   emojiReact: TEmojiReact[];
 };
 
